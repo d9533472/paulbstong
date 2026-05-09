@@ -1219,8 +1219,8 @@ const { useState, useEffect, useMemo, useRef } = React;
 // Leave gas_url as "" for local-only mode (data stays on this device).
 // =====================================================================
 const CLOUD_CONFIG = {
-  gas_url: "",       // e.g. "https://script.google.com/macros/s/AKfyc.../exec"
-  secret:  "",       // optional shared secret (must match SECRET in Code.gs); "" for none
+  gas_url: "https://script.google.com/macros/s/AKfycbzM0GGTl24zcKoyDEV1dOowSjqSc5DxM5U9KFpQAQGBzakqPyvKf_EIUdG5d_-YczmvZg/exec",       // e.g. "https://script.google.com/macros/s/AKfyc.../exec"
+  secret:  "paul",       // optional shared secret (must match SECRET in Code.gs); "" for none
   debounce_ms: 1200, // delay between last edit and cloud save
 };
 const CLOUD_ENABLED = !!CLOUD_CONFIG.gas_url;
