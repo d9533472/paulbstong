@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0d0a1f" />
+<title>Paul's Hub ✦ 個人指揮台</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+:root {
+  /* Base */
+  --bg: #0d0a1f;
+  --bg-2: #14102a;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.07);
+  --surface-hover: rgba(255, 255, 255, 0.10);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-2: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --text: #f8fafc;
+  --text-2: #cbd5e1;
+  --text-3: #94a3b8;
+  --text-4: #64748b;
+
+  /* Vibrant palette */
+  --cyan: #22d3ee;
+  --cyan-glow: rgba(34, 211, 238, 0.4);
+  --violet: #a78bfa;
+  --violet-glow: rgba(167, 139, 250, 0.4);
+  --coral: #fb7185;
+  --coral-glow: rgba(251, 113, 133, 0.4);
+  --amber: #fbbf24;
+  --amber-glow: rgba(251, 191, 36, 0.4);
+  --mint: #34d399;
+  --mint-glow: rgba(52, 211, 153, 0.4);
+  --pink: #f472b6;
+  --pink-glow: rgba(244, 114, 182, 0.4);
+  --blue: #60a5fa;
+  --blue-glow: rgba(96, 165, 250, 0.4);
+
+  /* Fonts */
+  --display: "Sora", "Noto Sans TC", system-ui, sans-serif;
+  --sans: "Plus Jakarta Sans", "Noto Sans TC", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+}
+
+/* Animated gradient orbs background */
+body::before, body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+body::before {
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, var(--violet) 0%, transparent 70%);
+  top: -180px; left: -120px;
+  animation: float1 18s ease-in-out infinite;
+}
+body::after {
+  width: 460px; height: 460px;
+  background: radial-gradient(circle, var(--cyan) 0%, transparent 70%);
+  bottom: -150px; right: -100px;
+  animation: float2 22s ease-in-out infinite;
+}
+.orb-extra {
+  content: "";
+  position: fixed;
+  width: 380px; height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--pink) 0%, transparent 70%);
+  filter: blur(100px);
+  top: 40%; right: 20%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.25;
+  animation: float3 26s ease-in-out infinite;
+}
+
+@keyframes float1 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  33% { transform: translate(60px, 40px) scale(1.1); }
+  66% { transform: translate(-30px, 80px) scale(0.95); }
+}
+@keyframes float2 {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(-80px, -50px) scale(1.15); }
+}
+@keyframes float3 {
+  0%, 100% { transform: translate(0,0); }
+  33% { transform: translate(-100px, 60px); }
+  66% { transform: translate(80px, -40px); }
+}
+
+#root { position: relative; z-index: 1; }
+
+/* === Layout === */
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+}
+@media (max-width: 720px) { .app { padding: 18px 14px 64px; } }
+
+/* === Header === */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding: 16px 22px;
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-mark {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+  color: #0d0a1f;
+  box-shadow: 0 8px 24px -8px var(--violet-glow);
+  position: relative;
+  overflow: hidden;
+}
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+  animation: shine 3.5s ease-in-out infinite;
+}
+@keyframes shine {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+}
+.brand-name {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  letter-spacing: 0.05em;
+}
+.live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 10px var(--mint);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+@media (max-width: 540px) {
+  .header { flex-direction: column; align-items: stretch; gap: 12px; }
+  .header-meta { align-self: flex-start; }
+}
+
+/* === Tab Nav === */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+.tab:hover {
+  transform: translateY(-2px);
+  background: var(--surface-2);
+  color: var(--text);
+}
+.tab .tab-emoji {
+  font-size: 18px;
+  filter: grayscale(0.3);
+  transition: filter 0.25s;
+}
+.tab:hover .tab-emoji, .tab.active .tab-emoji { filter: grayscale(0); }
+
+.tab.active[data-color="cyan"]   { background: rgba(34, 211, 238, 0.15); border-color: var(--cyan); color: var(--cyan); box-shadow: 0 8px 24px -8px var(--cyan-glow); }
+.tab.active[data-color="violet"] { background: rgba(167, 139, 250, 0.15); border-color: var(--violet); color: var(--violet); box-shadow: 0 8px 24px -8px var(--violet-glow); }
+.tab.active[data-color="coral"]  { background: rgba(251, 113, 133, 0.15); border-color: var(--coral); color: var(--coral); box-shadow: 0 8px 24px -8px var(--coral-glow); }
+.tab.active[data-color="amber"]  { background: rgba(251, 191, 36, 0.15); border-color: var(--amber); color: var(--amber); box-shadow: 0 8px 24px -8px var(--amber-glow); }
+.tab.active[data-color="mint"]   { background: rgba(52, 211, 153, 0.15); border-color: var(--mint); color: var(--mint); box-shadow: 0 8px 24px -8px var(--mint-glow); }
+
+/* === Glass Card Base === */
+.card {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.card-title h2 {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.card-title .meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  padding: 5px 10px;
+  background: var(--surface-2);
+  border-radius: 999px;
+}
+
+/* === Home Tab — Bento Grid === */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: minmax(120px, auto);
+  gap: 16px;
+}
+@media (max-width: 900px) { .bento { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 540px) { .bento { grid-template-columns: repeat(2, 1fr); } }
+
+.bento-card {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+}
+.bento-card::before {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at 30% 30%, var(--accent-glow), transparent 50%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.bento-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+
+/* Hero clock - spans 4 cols x 2 rows */
+.bento-clock {
+  --accent: var(--cyan);
+  --accent-glow: var(--cyan-glow);
+  grid-column: span 4;
+  grid-row: span 2;
+  justify-content: space-between;
+}
+.bento-clock .greet {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  position: relative;
+}
+.bento-clock .clock {
+  font-family: var(--display);
+  font-size: clamp(64px, 11vw, 124px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #fff 0%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-feature-settings: "tnum" 1;
+  position: relative;
+  margin: 8px 0;
+}
+.bento-clock .clock .sec {
+  font-size: 0.45em;
+  color: var(--coral);
+  -webkit-text-fill-color: var(--coral);
+  margin-left: 0.15em;
+  font-weight: 700;
+}
+.bento-clock .date {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bento-clock .date .roc {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border-radius: 999px;
+  color: var(--text-3);
+}
+
+@media (max-width: 900px) { .bento-clock { grid-column: span 3; } }
+
+/* Stat cards */
+.bento-stat {
+  grid-column: span 2;
+  cursor: default;
+}
+.bento-stat[data-c="weather"] { --accent: var(--blue); --accent-glow: var(--blue-glow); }
+.bento-stat[data-c="todos"]   { --accent: var(--mint); --accent-glow: var(--mint-glow); }
+.bento-stat[data-c="notes"]   { --accent: var(--amber); --accent-glow: var(--amber-glow); }
+.bento-stat[data-c="links"]   { --accent: var(--coral); --accent-glow: var(--coral-glow); }
+.bento-stat[data-c="quote"]   { --accent: var(--violet); --accent-glow: var(--violet-glow); grid-column: span 4; }
+.bento-stat[data-c="weekday"] { --accent: var(--pink); --accent-glow: var(--pink-glow); }
+
+@media (max-width: 900px) {
+  .bento-stat { grid-column: span 1; }
+  .bento-stat[data-c="quote"] { grid-column: span 3; }
+}
+@media (max-width: 540px) {
+  .bento-stat[data-c="quote"] { grid-column: span 2; }
+}
+
+.stat-icon {
+  font-size: 26px;
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  position: relative;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  position: relative;
+}
+.stat-value {
+  font-family: var(--display);
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  position: relative;
+}
+.stat-value .unit {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text-3);
+  margin-left: 6px;
+  font-weight: 500;
+}
+.stat-sub {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 8px;
+  position: relative;
+}
+
+/* Quote card special */
+.bento-stat[data-c="quote"] .quote-text {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--text);
+  position: relative;
+  margin-top: 8px;
+  letter-spacing: -0.01em;
+}
+.bento-stat[data-c="quote"] .quote-author {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--violet);
+  letter-spacing: 0.08em;
+  margin-top: 12px;
+  position: relative;
+}
+.bento-stat[data-c="quote"] .quote-mark {
+  font-family: var(--display);
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--violet);
+  line-height: 0.8;
+  opacity: 0.3;
+  position: relative;
+}
+
+/* Weekday card */
+.weekday-big {
+  font-family: var(--display);
+  font-size: 60px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--pink);
+  position: relative;
+}
+
+/* === Tools Tab === */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+.tool-card {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tool-card::before {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0; right: 0;
+  height: 100%;
+  background: radial-gradient(ellipse at top, var(--accent-glow), transparent 60%);
+  opacity: 0;
+  transition: all 0.4s ease;
+  pointer-events: none;
+}
+.tool-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+}
+.tool-card:hover::before {
+  top: -50%;
+  opacity: 0.7;
+}
+.tool-emoji {
+  width: 44px; height: 44px;
+  background: var(--surface-2);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  position: relative;
+  border: 1px solid var(--border);
+}
+.tool-name {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  position: relative;
+  letter-spacing: -0.01em;
+}
+.tool-desc {
+  font-size: 12.5px;
+  color: var(--text-3);
+  line-height: 1.55;
+  flex: 1;
+  position: relative;
+}
+.tool-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-tag);
+  color: var(--accent);
+  align-self: flex-start;
+  position: relative;
+  letter-spacing: 0.04em;
+}
+
+/* Per-card colors */
+.tc-cyan   { --accent: var(--cyan);   --accent-glow: var(--cyan-glow);   --accent-tag: rgba(34, 211, 238, 0.12); }
+.tc-violet { --accent: var(--violet); --accent-glow: var(--violet-glow); --accent-tag: rgba(167, 139, 250, 0.12); }
+.tc-coral  { --accent: var(--coral);  --accent-glow: var(--coral-glow);  --accent-tag: rgba(251, 113, 133, 0.12); }
+.tc-amber  { --accent: var(--amber);  --accent-glow: var(--amber-glow);  --accent-tag: rgba(251, 191, 36, 0.12); }
+.tc-mint   { --accent: var(--mint);   --accent-glow: var(--mint-glow);   --accent-tag: rgba(52, 211, 153, 0.12); }
+.tc-pink   { --accent: var(--pink);   --accent-glow: var(--pink-glow);   --accent-tag: rgba(244, 114, 182, 0.12); }
+.tc-blue   { --accent: var(--blue);   --accent-glow: var(--blue-glow);   --accent-tag: rgba(96, 165, 250, 0.12); }
+
+/* === Links Tab === */
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.link-card {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  text-decoration: none;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+.link-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: var(--surface-2);
+  border-color: var(--border-2);
+}
+.link-icon {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  background: var(--accent-bg);
+  color: var(--accent-color);
+  flex: 0 0 38px;
+  transition: transform 0.25s;
+}
+.link-card:hover .link-icon { transform: rotate(-6deg) scale(1.1); }
+.link-info { flex: 1; min-width: 0; }
+.link-title {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.link-host {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.link-delete {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(251, 113, 133, 0.15);
+  color: var(--coral);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0;
+  transition: all 0.2s;
+}
+.link-card:hover .link-delete { opacity: 1; }
+.link-delete:hover { background: var(--coral); color: white; transform: scale(1.1); }
+
+/* Add form (inputs) */
+.add-form {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+}
+.add-form input {
+  flex: 1;
+  min-width: 140px;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.add-form input::placeholder { color: var(--text-4); }
+.add-form input:focus {
+  outline: none;
+  border-color: var(--coral);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 4px var(--coral-glow);
+}
+
+.btn {
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  color: #0d0a1f;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 20px;
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: -0.01em;
+  position: relative;
+  overflow: hidden;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -8px var(--violet-glow); }
+.btn:active { transform: translateY(0); }
+.btn-ghost {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--surface-hover); transform: translateY(-2px); box-shadow: none; }
+.btn-danger {
+  background: rgba(251, 113, 133, 0.15);
+  color: var(--coral);
+  border: 1px solid rgba(251, 113, 133, 0.3);
+}
+.btn-danger:hover {
+  background: var(--coral);
+  color: white;
+  box-shadow: 0 8px 24px -8px var(--coral-glow);
+}
+
+/* === Notes Tab === */
+.notes-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 16px;
+  min-height: 460px;
+}
+@media (max-width: 720px) { .notes-layout { grid-template-columns: 1fr; } }
+
+.notes-list {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.note-item {
+  padding: 14px 16px;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+.note-item:hover { background: var(--surface-2); }
+.note-item.active {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: var(--amber);
+}
+.note-item-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-item-preview {
+  font-size: 12px;
+  color: var(--text-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-item-date {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-4);
+  margin-top: 6px;
+}
+
+.note-editor {
+  background: var(--surface);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.note-title-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  padding: 10px 0;
+  color: var(--text);
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 700;
+  transition: border-color 0.2s;
+  letter-spacing: -0.02em;
+}
+.note-title-input:focus { outline: none; border-color: var(--amber); }
+.note-body {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.7;
+  resize: none;
+  min-height: 320px;
+}
+.note-body:focus { outline: none; }
+.note-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.note-actions .meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 24px;
+}
+.empty-state .ico {
+  font-size: 56px;
+  margin-bottom: 16px;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.empty-state h3 {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.empty-state p {
+  font-size: 13px;
+  color: var(--text-3);
+  margin-bottom: 18px;
+}
+
+/* === Todos Tab === */
+.todo-input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+}
+.todo-input-row input {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 18px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.todo-input-row input::placeholder { color: var(--text-4); }
+.todo-input-row input:focus {
+  outline: none;
+  border-color: var(--mint);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 4px var(--mint-glow);
+}
+.todo-input-row .btn {
+  background: linear-gradient(135deg, var(--mint), var(--cyan));
+}
+.todo-input-row .btn:hover { box-shadow: 0 8px 24px -8px var(--mint-glow); }
+
+.todo-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.todo-stat {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.todo-stat .icn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 18px;
+  background: var(--surface-2);
+}
+.todo-stat[data-t="open"] .icn { color: var(--mint); }
+.todo-stat[data-t="done"] .icn { color: var(--violet); }
+.todo-stat[data-t="total"] .icn { color: var(--amber); }
+.todo-stat .num {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.todo-stat .lbl {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.todo-list { display: flex; flex-direction: column; gap: 10px; }
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.todo-item:hover { transform: translateX(4px); border-color: var(--border-2); }
+.todo-item.done { opacity: 0.55; }
+.todo-check {
+  width: 24px; height: 24px;
+  border-radius: 8px;
+  border: 2px solid var(--text-4);
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.todo-check:hover { border-color: var(--mint); transform: scale(1.1); }
+.todo-check.checked {
+  background: linear-gradient(135deg, var(--mint), var(--cyan));
+  border-color: transparent;
+  color: #0d0a1f;
+}
+.todo-check.checked::after {
+  content: "✓";
+  font-size: 14px;
+  font-weight: 800;
+}
+.todo-text {
+  flex: 1;
+  font-size: 14.5px;
+  color: var(--text);
+  font-weight: 500;
+}
+.todo-item.done .todo-text { text-decoration: line-through; color: var(--text-3); }
+.todo-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.todo-remove {
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 18px;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: grid;
+  place-items: center;
+}
+.todo-remove:hover { color: var(--coral); background: rgba(251, 113, 133, 0.15); transform: rotate(90deg); }
+
+/* === Footer === */
+.footer {
+  margin-top: 56px;
+  padding: 18px 22px;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+.footer .heart { color: var(--coral); animation: heart 1.4s ease-in-out infinite; display: inline-block; }
+@keyframes heart { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+@media (max-width: 540px) { .footer { flex-direction: column; gap: 8px; text-align: center; } }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-4); }
+
+/* Tab transition */
+.tab-content { animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+</style>
+</head>
+<body>
+<div class="orb-extra"></div>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+
+// ====== TOOLS — Edit URLs here ======
+const TOOLS = [
+  { id: "01", name: "NMDC EHS e-System",   desc: "公司 EHS 儀表板 — 公佈欄、任務、文件、班表", url: "https://d9533472.github.io/NMDCEHS-e-system/", tag: "EHS",     emoji: "🏢", color: "violet" },
+  { id: "02", name: "查驗紀錄管理系統",      desc: "通霄二期 環保項目 6 — 量化 / 非量化模式",       url: "#", tag: "通霄二期", emoji: "📋", color: "cyan" },
+  { id: "03", name: "改善通知單系統",        desc: "WM / NCR / PN 紀錄管理（通霄、台中）",         url: "#", tag: "改善",     emoji: "⚠",  color: "coral" },
+  { id: "04", name: "TPC 海管改善系統",      desc: "通霄電廠二期海底輸氣管線統包工程",              url: "#", tag: "海管",     emoji: "🌊", color: "blue" },
+  { id: "05", name: "改善照片表產生器",      desc: "Before / During / After，匯出 Word 格式",     url: "#", tag: "報表",     emoji: "📷", color: "amber" },
+  { id: "06", name: "灑水紀錄系統",          desc: "雲端版 + 本地版 — 環保灑水追蹤",              url: "#", tag: "環保",     emoji: "💧", color: "mint" },
+  { id: "07", name: "柴油車徽章系統",        desc: "車輛環保標章 — 本地 + Drive 匯出",            url: "#", tag: "管理",     emoji: "🚛", color: "amber" },
+  { id: "08", name: "海管打樁地圖",          desc: "Leaflet 地圖 + 58 樁位 + 三艘船舶追蹤",        url: "#", tag: "GIS",      emoji: "🗺", color: "cyan" },
+  { id: "09", name: "週報工具 v22",          desc: "12 區塊 ENV 週報、KPI、NCR 追蹤",            url: "#", tag: "週報",     emoji: "📊", color: "violet" },
+  { id: "10", name: "海上甘特圖",            desc: "MMO 排程 — 日 / 週 / 月縮放、Excel 匯入",     url: "#", tag: "排程",     emoji: "📅", color: "pink" },
+  { id: "11", name: "OPTS 人員轉運系統",     desc: "船舶 / 人員 / 地點 / 批次轉運",                url: "#", tag: "Offshore", emoji: "🚢", color: "blue" },
+  { id: "12", name: "PTW 動火許可登錄",      desc: "雙語 Permit to Work — 公司、日期區間",        url: "#", tag: "Safety",   emoji: "🔥", color: "coral" },
+  { id: "13", name: "淨慈寺文化園區 CMS",    desc: "三檔案系統 — 內容、登入、媒體",               url: "https://d9533472.github.io/teqy/", tag: "CMS", emoji: "🛕", color: "amber" },
+  { id: "14", name: "NMDC 團隊淨灘",         desc: "2026 報名系統 — 200 名額、Email 通知",        url: "#", tag: "活動",     emoji: "🏖", color: "mint" },
+  { id: "15", name: "HSE 安全觀察卡",        desc: "20 欄位 + 圖片上傳 + Chart.js 儀表板",       url: "#", tag: "Safety",   emoji: "🦺", color: "coral" },
+];
+
+const DEFAULT_LINKS = [
+  { id: 1,  title: "Gmail",          url: "https://mail.google.com",                          icon: "✉", color: "coral" },
+  { id: 2,  title: "Google Calendar",url: "https://calendar.google.com",                      icon: "📅", color: "blue" },
+  { id: 3,  title: "Google Drive",   url: "https://drive.google.com",                          icon: "📁", color: "amber" },
+  { id: 4,  title: "GitHub",         url: "https://github.com/d9533472",                       icon: "◉",  color: "violet" },
+  { id: 5,  title: "Claude",         url: "https://claude.ai",                                 icon: "✦",  color: "amber" },
+  { id: 6,  title: "ChatGPT",        url: "https://chat.openai.com",                           icon: "◐",  color: "mint" },
+  { id: 7,  title: "黃金即時牌價",    url: "https://www.kitco.com/charts/livegold.html",         icon: "💰", color: "amber" },
+  { id: 8,  title: "Investing.com",  url: "https://www.investing.com/",                        icon: "📈", color: "mint" },
+  { id: 9,  title: "FlightRadar24",  url: "https://www.flightradar24.com/",                    icon: "✈",  color: "cyan" },
+  { id: 10, title: "VesselFinder",   url: "https://www.vesselfinder.com/",                     icon: "⚓", color: "blue" },
+  { id: 11, title: "中央氣象署",      url: "https://www.cwa.gov.tw/",                          icon: "☁",  color: "cyan" },
+  { id: 12, title: "台灣電力公司",    url: "https://www.taipower.com.tw/",                     icon: "⚡", color: "amber" },
+];
+
+const QUOTES = [
+  { text: "Quality means doing it right when no one is looking.", author: "Henry Ford" },
+  { text: "Safety is something that happens between your ears.", author: "Jeff Cooper" },
+  { text: "An ounce of prevention is worth a pound of cure.", author: "Benjamin Franklin" },
+  { text: "Engineering is the art of directing power for human use.", author: "Thomas Tredgold" },
+  { text: "What gets measured gets managed.", author: "Peter Drucker" },
+  { text: "Plans are nothing; planning is everything.", author: "Dwight D. Eisenhower" },
+  { text: "Excellence is never an accident.", author: "Aristotle" },
+  { text: "The best way to predict the future is to build it.", author: "Alan Kay" },
+];
+
+// Color tokens for links - matches CSS variables
+const COLOR_BG = {
+  cyan:   "rgba(34, 211, 238, 0.15)",
+  violet: "rgba(167, 139, 250, 0.15)",
+  coral:  "rgba(251, 113, 133, 0.15)",
+  amber:  "rgba(251, 191, 36, 0.15)",
+  mint:   "rgba(52, 211, 153, 0.15)",
+  pink:   "rgba(244, 114, 182, 0.15)",
+  blue:   "rgba(96, 165, 250, 0.15)",
+};
+const COLOR_FG = {
+  cyan: "#22d3ee", violet: "#a78bfa", coral: "#fb7185",
+  amber: "#fbbf24", mint: "#34d399", pink: "#f472b6", blue: "#60a5fa",
+};
+
+// ====== Helpers ======
+const ls = {
+  get: (k, fallback) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const pad = n => String(n).padStart(2,"0");
+const fmtDate = d => {
+  const days = ["週日","週一","週二","週三","週四","週五","週六"];
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} · ${days[d.getDay()]}`;
+};
+const weekday = d => ["SUN","MON","TUE","WED","THU","FRI","SAT"][d.getDay()];
+const greetByHour = h => {
+  if (h < 5)  return { txt: "深夜了", emoji: "🌙" };
+  if (h < 11) return { txt: "早安",  emoji: "☀" };
+  if (h < 14) return { txt: "午安",  emoji: "🌤" };
+  if (h < 18) return { txt: "下午好", emoji: "☕" };
+  if (h < 22) return { txt: "晚安",  emoji: "🌆" };
+  return { txt: "夜深了", emoji: "🌙" };
+};
+const getHost = url => { try { return new URL(url).hostname.replace(/^www\./,""); } catch { return url; } };
+
+// ====== Header ======
+function Header({ now }) {
+  return (
+    <div className="header">
+      <div className="brand">
+        <div className="brand-mark">P</div>
+        <div>
+          <div className="brand-name">Paul's Hub</div>
+          <div className="brand-sub">Personal Command Center</div>
+        </div>
+      </div>
+      <div className="header-meta">
+        <span className="live-dot"></span>
+        Banqiao · {pad(now.getHours())}:{pad(now.getMinutes())} GMT+8
+      </div>
+    </div>
+  );
+}
+
+// ====== Tabs ======
+const TABS = [
+  { key: "home",  emoji: "🏠", label: "首頁",     color: "cyan"   },
+  { key: "tools", emoji: "🛠", label: "我的工具",  color: "violet" },
+  { key: "links", emoji: "🔗", label: "快速連結",  color: "coral"  },
+  { key: "notes", emoji: "📝", label: "筆記",     color: "amber"  },
+  { key: "todos", emoji: "✅", label: "待辦",     color: "mint"   },
+];
+function TabNav({ active, setActive }) {
+  return (
+    <div className="tabs">
+      {TABS.map(t => (
+        <button
+          key={t.key}
+          className={`tab ${active === t.key ? "active" : ""}`}
+          data-color={t.color}
+          onClick={() => setActive(t.key)}
+        >
+          <span className="tab-emoji">{t.emoji}</span>
+          <span>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ====== Home Tab ======
+function HomeTab({ now, notesCount, todosCount, todosOpen, linksCount }) {
+  const greet = greetByHour(now.getHours());
+  const quote = useMemo(() => {
+    const idx = Math.floor((now.getFullYear()*366 + now.getMonth()*31 + now.getDate()) % QUOTES.length);
+    return QUOTES[idx];
+  }, [now.toDateString()]);
+
+  const [weather, setWeather] = useState(null);
+  useEffect(() => {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=25.0117&longitude=121.4647&current=temperature_2m,weather_code&timezone=Asia/Taipei")
+      .then(r => r.json())
+      .then(d => { if (d?.current) setWeather({ temp: Math.round(d.current.temperature_2m), code: d.current.weather_code }); })
+      .catch(() => {});
+  }, []);
+
+  const weatherInfo = (code) => {
+    if (code == null) return { desc: "—", emoji: "🌡" };
+    if (code === 0)   return { desc: "晴朗", emoji: "☀" };
+    if (code <= 3)    return { desc: "多雲", emoji: "⛅" };
+    if (code <= 48)   return { desc: "霧",   emoji: "🌫" };
+    if (code <= 67)   return { desc: "雨",   emoji: "🌧" };
+    if (code <= 77)   return { desc: "雪",   emoji: "❄" };
+    if (code <= 82)   return { desc: "陣雨", emoji: "🌦" };
+    if (code <= 99)   return { desc: "雷雨", emoji: "⛈" };
+    return { desc: "—", emoji: "🌡" };
+  };
+  const w = weather ? weatherInfo(weather.code) : { desc: "讀取中…", emoji: "🌡" };
+  const progress = todosCount > 0 ? Math.round(((todosCount - todosOpen) / todosCount) * 100) : 0;
+
+  return (
+    <div className="tab-content">
+      <div className="bento">
+
+        {/* Hero Clock */}
+        <div className="bento-card bento-clock">
+          <div>
+            <div className="greet">{greet.emoji} {greet.txt}，PAUL</div>
+            <div className="clock">
+              {pad(now.getHours())}:{pad(now.getMinutes())}
+              <span className="sec">:{pad(now.getSeconds())}</span>
+            </div>
+          </div>
+          <div className="date">
+            {fmtDate(now)}
+            <span className="roc">民國 {now.getFullYear()-1911} 年</span>
+          </div>
+        </div>
+
+        {/* Weekday */}
+        <div className="bento-card bento-stat" data-c="weekday">
+          <div className="stat-icon">📆</div>
+          <div className="stat-label">Weekday</div>
+          <div className="weekday-big">{weekday(now)}</div>
+          <div className="stat-sub">{["星期日","星期一","星期二","星期三","星期四","星期五","星期六"][now.getDay()]}</div>
+        </div>
+
+        {/* Weather */}
+        <div className="bento-card bento-stat" data-c="weather">
+          <div className="stat-icon">{w.emoji}</div>
+          <div className="stat-label">板橋 · 氣溫</div>
+          <div className="stat-value">{weather ? weather.temp : "—"}<span className="unit">°C</span></div>
+          <div className="stat-sub">{w.desc}</div>
+        </div>
+
+        {/* Todos */}
+        <div className="bento-card bento-stat" data-c="todos">
+          <div className="stat-icon">✓</div>
+          <div className="stat-label">待辦進度</div>
+          <div className="stat-value">{progress}<span className="unit">%</span></div>
+          <div className="stat-sub">{todosOpen} 進行中 · {todosCount-todosOpen} 完成</div>
+        </div>
+
+        {/* Notes */}
+        <div className="bento-card bento-stat" data-c="notes">
+          <div className="stat-icon">📓</div>
+          <div className="stat-label">筆記</div>
+          <div className="stat-value">{notesCount}<span className="unit">篇</span></div>
+          <div className="stat-sub">記下每個靈感</div>
+        </div>
+
+        {/* Links */}
+        <div className="bento-card bento-stat" data-c="links">
+          <div className="stat-icon">🔗</div>
+          <div className="stat-label">收藏</div>
+          <div className="stat-value">{linksCount}<span className="unit">個</span></div>
+          <div className="stat-sub">快速連結</div>
+        </div>
+
+        {/* Quote */}
+        <div className="bento-card bento-stat" data-c="quote">
+          <div className="quote-mark">"</div>
+          <div className="stat-label">每日一句</div>
+          <div className="quote-text">{quote.text}</div>
+          <div className="quote-author">— {quote.author}</div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+// ====== Tools Tab ======
+function ToolsTab() {
+  return (
+    <div className="tab-content">
+      <div className="card-title">
+        <h2>🛠 My Tools</h2>
+        <span className="meta">{TOOLS.length} systems</span>
+      </div>
+      <div className="tools-grid">
+        {TOOLS.map(t => (
+          <a key={t.id} href={t.url} target="_blank" rel="noopener noreferrer" className={`tool-card tc-${t.color}`}>
+            <div className="tool-emoji">{t.emoji}</div>
+            <div className="tool-name">{t.name}</div>
+            <div className="tool-desc">{t.desc}</div>
+            <span className="tool-tag">{t.tag}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ====== Links Tab ======
+function LinksTab() {
+  const [links, setLinks] = useState(() => ls.get("hq_links", DEFAULT_LINKS));
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+
+  useEffect(() => { ls.set("hq_links", links); }, [links]);
+
+  const add = () => {
+    const t = title.trim(), u = url.trim();
+    if (!t || !u) return;
+    const safeUrl = u.startsWith("http") ? u : `https://${u}`;
+    const colors = ["cyan","violet","coral","amber","mint","pink","blue"];
+    setLinks([...links, { id: Date.now(), title: t, url: safeUrl, icon: "◇", color: colors[Math.floor(Math.random()*colors.length)] }]);
+    setTitle(""); setUrl("");
+  };
+  const remove = id => setLinks(links.filter(l => l.id !== id));
+
+  return (
+    <div className="tab-content">
+      <div className="card-title">
+        <h2>🔗 Quick Links</h2>
+        <span className="meta">{links.length} bookmarks</span>
+      </div>
+
+      <div className="links-grid">
+        {links.map(l => {
+          const c = l.color || "cyan";
+          return (
+            <a key={l.id} href={l.url} target="_blank" rel="noopener noreferrer" className="link-card">
+              <button className="link-delete" onClick={(e) => { e.preventDefault(); remove(l.id); }}>×</button>
+              <div className="link-icon" style={{"--accent-bg": COLOR_BG[c], "--accent-color": COLOR_FG[c]}}>{l.icon || "◇"}</div>
+              <div className="link-info">
+                <div className="link-title">{l.title}</div>
+                <div className="link-host">{getHost(l.url)}</div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+
+      <div className="add-form">
+        <input type="text" placeholder="名稱" value={title} onChange={e => setTitle(e.target.value)} />
+        <input type="url" placeholder="https://..." value={url} onChange={e => setUrl(e.target.value)} onKeyDown={e => e.key === "Enter" && add()} />
+        <button className="btn" onClick={add}>＋ 新增</button>
+      </div>
+    </div>
+  );
+}
+
+// ====== Notes Tab ======
+function NotesTab() {
+  const [notes, setNotes] = useState(() => ls.get("hq_notes", []));
+  const [activeId, setActiveId] = useState(null);
+  useEffect(() => { ls.set("hq_notes", notes); }, [notes]);
+
+  const active = notes.find(n => n.id === activeId);
+  const sorted = [...notes].sort((a, b) => b.updated - a.updated);
+
+  const create = () => {
+    const n = { id: Date.now(), title: "新筆記", body: "", created: Date.now(), updated: Date.now() };
+    setNotes([n, ...notes]); setActiveId(n.id);
+  };
+  const update = (field, value) => setNotes(notes.map(n => n.id === activeId ? { ...n, [field]: value, updated: Date.now() } : n));
+  const remove = () => {
+    if (!active) return;
+    if (!confirm(`刪除「${active.title}」？`)) return;
+    setNotes(notes.filter(n => n.id !== activeId));
+    setActiveId(null);
+  };
+
+  return (
+    <div className="tab-content">
+      <div className="card-title">
+        <h2>📝 Notes</h2>
+        <button className="btn" onClick={create}>＋ 新增筆記</button>
+      </div>
+      <div className="notes-layout">
+        <div className="notes-list">
+          {sorted.length === 0 && (
+            <div style={{padding: "30px 12px", textAlign: "center", color: "var(--text-3)", fontSize: 12}}>
+              尚無筆記
+            </div>
+          )}
+          {sorted.map(n => (
+            <div key={n.id} className={`note-item ${n.id === activeId ? "active" : ""}`} onClick={() => setActiveId(n.id)}>
+              <div className="note-item-title">{n.title || "未命名"}</div>
+              <div className="note-item-preview">{(n.body || "").substring(0, 50) || "（空白）"}</div>
+              <div className="note-item-date">{new Date(n.updated).toLocaleString("zh-TW", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
+            </div>
+          ))}
+        </div>
+        <div className="note-editor">
+          {active ? (
+            <>
+              <input className="note-title-input" value={active.title} onChange={e => update("title", e.target.value)} placeholder="標題" />
+              <textarea className="note-body" value={active.body} onChange={e => update("body", e.target.value)} placeholder="開始寫點什麼…" />
+              <div className="note-actions">
+                <span className="meta">最後修改 {new Date(active.updated).toLocaleString("zh-TW")}</span>
+                <button className="btn btn-danger" onClick={remove}>刪除</button>
+              </div>
+            </>
+          ) : (
+            <div className="empty-state">
+              <span className="ico">📔</span>
+              <h3>選一篇筆記</h3>
+              <p>左側點選筆記，或建立新的開始記錄</p>
+              <button className="btn" onClick={create}>＋ 新增筆記</button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ====== Todos Tab ======
+function TodosTab() {
+  const [todos, setTodos] = useState(() => ls.get("hq_todos", []));
+  const [text, setText] = useState("");
+  useEffect(() => { ls.set("hq_todos", todos); }, [todos]);
+
+  const add = () => {
+    const t = text.trim(); if (!t) return;
+    setTodos([{ id: Date.now(), text: t, done: false, created: Date.now() }, ...todos]);
+    setText("");
+  };
+  const toggle = id => setTodos(todos.map(t => t.id === id ? { ...t, done: !t.done } : t));
+  const remove = id => setTodos(todos.filter(t => t.id !== id));
+  const clearDone = () => { if (confirm("清除所有已完成項目？")) setTodos(todos.filter(t => !t.done)); };
+
+  const open = todos.filter(t => !t.done).length;
+  const done = todos.length - open;
+
+  return (
+    <div className="tab-content">
+      <div className="card-title">
+        <h2>✅ Todos</h2>
+        {done > 0 && <button className="btn btn-ghost" onClick={clearDone}>清除已完成</button>}
+      </div>
+
+      <div className="todo-input-row">
+        <input type="text" placeholder="加一件待辦… (Enter 送出)" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === "Enter" && add()} />
+        <button className="btn" onClick={add}>＋ 新增</button>
+      </div>
+
+      <div className="todo-stats">
+        <div className="todo-stat" data-t="open">
+          <div className="icn">⚡</div>
+          <div><div className="num">{open}</div><div className="lbl">進行中</div></div>
+        </div>
+        <div className="todo-stat" data-t="done">
+          <div className="icn">✓</div>
+          <div><div className="num">{done}</div><div className="lbl">已完成</div></div>
+        </div>
+        <div className="todo-stat" data-t="total">
+          <div className="icn">∑</div>
+          <div><div className="num">{todos.length}</div><div className="lbl">總計</div></div>
+        </div>
+      </div>
+
+      <div className="todo-list">
+        {todos.length === 0 && (
+          <div className="empty-state">
+            <span className="ico">🎉</span>
+            <h3>清單是空的</h3>
+            <p>新增一件事開始今天的工作</p>
+          </div>
+        )}
+        {todos.map(t => (
+          <div key={t.id} className={`todo-item ${t.done ? "done" : ""}`}>
+            <button className={`todo-check ${t.done ? "checked" : ""}`} onClick={() => toggle(t.id)} aria-label="toggle" />
+            <span className="todo-text">{t.text}</span>
+            <span className="todo-date">{new Date(t.created).toLocaleDateString("zh-TW", { month: "2-digit", day: "2-digit" })}</span>
+            <button className="todo-remove" onClick={() => remove(t.id)} aria-label="remove">×</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ====== App ======
+function App() {
+  const [active, setActive] = useState(() => ls.get("hq_active_tab", "home"));
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  useEffect(() => { ls.set("hq_active_tab", active); }, [active]);
+
+  // Live counts (polled so stats stay fresh after edits in other tabs)
+  const [, setTick] = useState(0);
+  useEffect(() => { const id = setInterval(() => setTick(t => t+1), 2000); return () => clearInterval(id); }, []);
+  const liveNotes = ls.get("hq_notes", []);
+  const liveTodos = ls.get("hq_todos", []);
+  const liveLinks = ls.get("hq_links", DEFAULT_LINKS);
+
+  return (
+    <div className="app">
+      <Header now={now} />
+      <TabNav active={active} setActive={setActive} />
+
+      {active === "home" && (
+        <HomeTab
+          now={now}
+          notesCount={liveNotes.length}
+          todosCount={liveTodos.length}
+          todosOpen={liveTodos.filter(t => !t.done).length}
+          linksCount={liveLinks.length}
+        />
+      )}
+      {active === "tools" && <ToolsTab />}
+      {active === "links" && <LinksTab />}
+      {active === "notes" && <NotesTab />}
+      {active === "todos" && <TodosTab />}
+
+      <div className="footer">
+        <div>© {now.getFullYear()} PAUL TONG · 童保舜 · Crafted with <span className="heart">♥</span></div>
+        <div>v2.0 · Vibrant Edition</div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
