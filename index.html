@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="theme-color" content="#0d0a1f" />
-<title>Paul's Hub ✦ 個人指揮台</title>
+<title>Paul's Hub ☁ 個人指揮台</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -207,9 +207,70 @@ body::after {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(0.85); }
 }
+
+/* Cloud sync pill */
+.sync-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-2);
+  letter-spacing: 0.05em;
+  transition: all 0.25s;
+}
+.sync-pill .sync-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+.sync-pill[data-status="loading"] .sync-dot,
+.sync-pill[data-status="saving"]  .sync-dot {
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  animation: pulse 1s ease-in-out infinite;
+}
+.sync-pill[data-status="synced"] .sync-dot {
+  background: var(--mint);
+  box-shadow: 0 0 8px var(--mint);
+}
+.sync-pill[data-status="error"] .sync-dot {
+  background: var(--coral);
+  box-shadow: 0 0 8px var(--coral);
+}
+.sync-pill[data-status="local"] .sync-dot { background: var(--text-4); }
+.sync-pill[data-status="error"] { border-color: rgba(251, 113, 133, 0.4); }
+
+.sync-refresh {
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 13px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  margin-left: -2px;
+  transition: all 0.2s;
+}
+.sync-refresh:hover { color: var(--cyan); transform: rotate(180deg); }
+.sync-refresh:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 540px) {
   .header { flex-direction: column; align-items: stretch; gap: 12px; }
   .header-meta { align-self: flex-start; }
+  .header-right { width: 100%; }
 }
 
 /* === Tab Nav === */
@@ -577,6 +638,122 @@ body::after {
 .tc-mint   { --accent: var(--mint);   --accent-glow: var(--mint-glow);   --accent-tag: rgba(52, 211, 153, 0.12); }
 .tc-pink   { --accent: var(--pink);   --accent-glow: var(--pink-glow);   --accent-tag: rgba(244, 114, 182, 0.12); }
 .tc-blue   { --accent: var(--blue);   --accent-glow: var(--blue-glow);   --accent-tag: rgba(96, 165, 250, 0.12); }
+
+/* Edit / Delete actions on tool cards */
+.tool-actions {
+  position: absolute;
+  top: 10px; right: 10px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+.tool-card:hover .tool-actions { opacity: 1; }
+.tool-action {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text);
+  transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tool-action:hover { transform: scale(1.12); }
+.tool-action.edit:hover { background: var(--cyan); color: #0d0a1f; }
+.tool-action.del:hover  { background: var(--coral); color: #fff; }
+/* Always show on touch devices (no hover) */
+@media (hover: none) {
+  .tool-actions { opacity: 1; }
+}
+
+/* Add / Edit Tool Form */
+.add-tool-form {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.add-tool-form .form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.add-tool-form .form-title {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.add-tool-form .form-grid {
+  display: grid;
+  grid-template-columns: 70px 1fr 140px;
+  gap: 10px;
+}
+.add-tool-form .form-grid > input,
+.add-tool-form .form-grid > button {
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  width: 100%;
+}
+.add-tool-form .form-grid > input::placeholder { color: var(--text-4); }
+.add-tool-form .form-grid > input:focus {
+  outline: none;
+  border-color: var(--violet);
+  background: var(--surface-hover);
+  box-shadow: 0 0 0 4px var(--violet-glow);
+}
+.add-tool-form .emoji-input { text-align: center; font-size: 18px; }
+.add-tool-form .url-input  { grid-column: 1 / -1; }
+.add-tool-form .desc-input { grid-column: 1 / 3; }
+.add-tool-form .submit-btn {
+  background: linear-gradient(135deg, var(--violet), var(--pink));
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-family: var(--display);
+  font-weight: 700;
+}
+.add-tool-form .submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -8px var(--violet-glow);
+}
+
+@media (max-width: 720px) {
+  .add-tool-form .form-grid {
+    grid-template-columns: 70px 1fr;
+  }
+  .add-tool-form .tag-input,
+  .add-tool-form .desc-input,
+  .add-tool-form .submit-btn { grid-column: 1 / -1; }
+}
+
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 12px;
+  border-radius: 10px;
+}
 
 /* === Links Tab === */
 .links-grid {
@@ -1035,10 +1212,21 @@ body::after {
 <div id="root"></div>
 
 <script type="text/babel">
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect, useMemo, useRef } = React;
 
-// ====== TOOLS — Edit URLs here ======
-const TOOLS = [
+// =====================================================================
+// CLOUD SYNC CONFIG — fill in to enable cross-device sync via Google Apps Script.
+// Leave gas_url as "" for local-only mode (data stays on this device).
+// =====================================================================
+const CLOUD_CONFIG = {
+  gas_url: "",       // e.g. "https://script.google.com/macros/s/AKfyc.../exec"
+  secret:  "",       // optional shared secret (must match SECRET in Code.gs); "" for none
+  debounce_ms: 1200, // delay between last edit and cloud save
+};
+const CLOUD_ENABLED = !!CLOUD_CONFIG.gas_url;
+
+// ====== TOOLS — Default seed (editable in UI, saved to localStorage) ======
+const DEFAULT_TOOLS = [
   { id: "01", name: "NMDC EHS e-System",   desc: "公司 EHS 儀表板 — 公佈欄、任務、文件、班表", url: "https://d9533472.github.io/NMDCEHS-e-system/", tag: "EHS",     emoji: "🏢", color: "violet" },
   { id: "02", name: "查驗紀錄管理系統",      desc: "通霄二期 環保項目 6 — 量化 / 非量化模式",       url: "#", tag: "通霄二期", emoji: "📋", color: "cyan" },
   { id: "03", name: "改善通知單系統",        desc: "WM / NCR / PN 紀錄管理（通霄、台中）",         url: "#", tag: "改善",     emoji: "⚠",  color: "coral" },
@@ -1118,8 +1306,45 @@ const greetByHour = h => {
 };
 const getHost = url => { try { return new URL(url).hostname.replace(/^www\./,""); } catch { return url; } };
 
+// ====== Cloud Sync (Google Apps Script + Sheets) ======
+function gasLoad() {
+  // GET to load all tables. Uses fetch (cross-origin GET works fine).
+  const url = CLOUD_CONFIG.gas_url + "?action=load" + (CLOUD_CONFIG.secret ? "&secret=" + encodeURIComponent(CLOUD_CONFIG.secret) : "");
+  return fetch(url).then(r => r.json()).then(r => {
+    if (r.error) throw new Error(r.error);
+    return r.data || {};
+  });
+}
+function gasSave(table, data) {
+  // POST via XHR with text/plain to dodge CORS preflight (works on iOS Safari).
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", CLOUD_CONFIG.gas_url, true);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+    xhr.timeout = 15000;
+    xhr.onload = () => {
+      try {
+        const r = JSON.parse(xhr.responseText);
+        if (r.error) reject(new Error(r.error));
+        else resolve(r);
+      } catch (e) { reject(new Error("Invalid response")); }
+    };
+    xhr.onerror = () => reject(new Error("Network error"));
+    xhr.ontimeout = () => reject(new Error("Timeout"));
+    xhr.send(JSON.stringify({ action: "save", table, data, secret: CLOUD_CONFIG.secret || "" }));
+  });
+}
+
 // ====== Header ======
-function Header({ now }) {
+const SYNC_LABELS = {
+  loading: "載入中…",
+  saving:  "同步中…",
+  synced:  "已同步",
+  error:   "連線失敗",
+  local:   "本機模式",
+};
+function Header({ now, syncStatus, onRefresh, lastSync }) {
+  const tip = lastSync ? "最後同步：" + lastSync.toLocaleTimeString("zh-TW") : "尚未同步";
   return (
     <div className="header">
       <div className="brand">
@@ -1129,9 +1354,23 @@ function Header({ now }) {
           <div className="brand-sub">Personal Command Center</div>
         </div>
       </div>
-      <div className="header-meta">
-        <span className="live-dot"></span>
-        Banqiao · {pad(now.getHours())}:{pad(now.getMinutes())} GMT+8
+      <div className="header-right">
+        <div className="sync-pill" data-status={syncStatus} title={tip}>
+          <span className="sync-dot"></span>
+          <span>{SYNC_LABELS[syncStatus] || syncStatus}</span>
+          {syncStatus !== "local" && (
+            <button
+              className="sync-refresh"
+              onClick={onRefresh}
+              disabled={syncStatus === "loading" || syncStatus === "saving"}
+              title="重新整理"
+            >↻</button>
+          )}
+        </div>
+        <div className="header-meta">
+          <span className="live-dot"></span>
+          Banqiao · {pad(now.getHours())}:{pad(now.getMinutes())} GMT+8
+        </div>
       </div>
     </div>
   );
@@ -1266,16 +1505,78 @@ function HomeTab({ now, notesCount, todosCount, todosOpen, linksCount }) {
 }
 
 // ====== Tools Tab ======
-function ToolsTab() {
+function ToolsTab({ tools, setTools }) {
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState({ name: "", url: "", desc: "", tag: "", emoji: "" });
+
+  const updateForm = (field, val) => setForm(f => ({...f, [field]: val}));
+  const clearForm = () => { setForm({ name: "", url: "", desc: "", tag: "", emoji: "" }); setEditingId(null); };
+
+  const submit = () => {
+    const n = form.name.trim(), u = form.url.trim();
+    if (!n || !u) { alert("名稱跟 URL 是必填的喔"); return; }
+    const safeUrl = u.startsWith("http") ? u : `https://${u}`;
+    const colors = ["cyan","violet","coral","amber","mint","pink","blue"];
+
+    if (editingId) {
+      setTools(tools.map(t => t.id === editingId ? {
+        ...t,
+        name: n,
+        url: safeUrl,
+        desc: form.desc.trim() || t.desc,
+        tag: form.tag.trim() || t.tag,
+        emoji: form.emoji.trim() || t.emoji,
+      } : t));
+    } else {
+      const ids = tools.map(t => parseInt(t.id) || 0);
+      const newId = String(Math.max(0, ...ids) + 1).padStart(2, "0");
+      setTools([...tools, {
+        id: newId,
+        name: n,
+        url: safeUrl,
+        desc: form.desc.trim() || "—",
+        tag: form.tag.trim() || "工具",
+        emoji: form.emoji.trim() || "🔧",
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }]);
+    }
+    clearForm();
+  };
+
+  const startEdit = (t) => {
+    setEditingId(t.id);
+    setForm({ name: t.name, url: t.url === "#" ? "" : t.url, desc: t.desc === "—" ? "" : t.desc, tag: t.tag, emoji: t.emoji });
+    setTimeout(() => document.querySelector(".add-tool-form")?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+  };
+
+  const remove = (id) => {
+    const t = tools.find(x => x.id === id);
+    if (!confirm(`刪除「${t?.name || "此工具"}」？`)) return;
+    setTools(tools.filter(t => t.id !== id));
+    if (editingId === id) clearForm();
+  };
+
+  const reset = () => {
+    if (confirm("恢復為預設 15 個工具？目前的清單會被覆蓋。")) {
+      setTools(DEFAULT_TOOLS);
+      clearForm();
+    }
+  };
+
   return (
     <div className="tab-content">
       <div className="card-title">
         <h2>🛠 My Tools</h2>
-        <span className="meta">{TOOLS.length} systems</span>
+        <span className="meta">{tools.length} systems</span>
       </div>
+
       <div className="tools-grid">
-        {TOOLS.map(t => (
-          <a key={t.id} href={t.url} target="_blank" rel="noopener noreferrer" className={`tool-card tc-${t.color}`}>
+        {tools.map(t => (
+          <a key={t.id} href={t.url} target="_blank" rel="noopener noreferrer" className={`tool-card tc-${t.color || "cyan"}`}>
+            <div className="tool-actions">
+              <button className="tool-action edit" onClick={(e) => { e.preventDefault(); startEdit(t); }} title="編輯">✎</button>
+              <button className="tool-action del"  onClick={(e) => { e.preventDefault(); remove(t.id); }} title="刪除">×</button>
+            </div>
             <div className="tool-emoji">{t.emoji}</div>
             <div className="tool-name">{t.name}</div>
             <div className="tool-desc">{t.desc}</div>
@@ -1283,17 +1584,32 @@ function ToolsTab() {
           </a>
         ))}
       </div>
+
+      <div className="add-tool-form">
+        <div className="form-header">
+          <span className="form-title">{editingId ? "✎ 編輯工具" : "＋ 新增工具"}</span>
+          <div style={{display: "flex", gap: 8}}>
+            {editingId && <button className="btn btn-ghost btn-sm" onClick={clearForm}>取消</button>}
+            <button className="btn btn-ghost btn-sm" onClick={reset} title="恢復成原本內建的 15 個工具">↻ 恢復預設</button>
+          </div>
+        </div>
+        <div className="form-grid">
+          <input className="emoji-input"  type="text" placeholder="🔧"          value={form.emoji} onChange={e => updateForm("emoji", e.target.value)} maxLength={4} />
+          <input className="name-input"   type="text" placeholder="名稱 *"       value={form.name}  onChange={e => updateForm("name", e.target.value)} />
+          <input className="tag-input"    type="text" placeholder="標籤"         value={form.tag}   onChange={e => updateForm("tag", e.target.value)} />
+          <input className="url-input"    type="url"  placeholder="https://... *" value={form.url}   onChange={e => updateForm("url", e.target.value)} onKeyDown={e => e.key === "Enter" && submit()} />
+          <input className="desc-input"   type="text" placeholder="描述（可選）"  value={form.desc}  onChange={e => updateForm("desc", e.target.value)} />
+          <button className="btn submit-btn" onClick={submit}>{editingId ? "✓ 更新" : "＋ 新增"}</button>
+        </div>
+      </div>
     </div>
   );
 }
 
 // ====== Links Tab ======
-function LinksTab() {
-  const [links, setLinks] = useState(() => ls.get("hq_links", DEFAULT_LINKS));
+function LinksTab({ links, setLinks }) {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-
-  useEffect(() => { ls.set("hq_links", links); }, [links]);
 
   const add = () => {
     const t = title.trim(), u = url.trim();
@@ -1338,10 +1654,8 @@ function LinksTab() {
 }
 
 // ====== Notes Tab ======
-function NotesTab() {
-  const [notes, setNotes] = useState(() => ls.get("hq_notes", []));
+function NotesTab({ notes, setNotes }) {
   const [activeId, setActiveId] = useState(null);
-  useEffect(() => { ls.set("hq_notes", notes); }, [notes]);
 
   const active = notes.find(n => n.id === activeId);
   const sorted = [...notes].sort((a, b) => b.updated - a.updated);
@@ -1404,10 +1718,8 @@ function NotesTab() {
 }
 
 // ====== Todos Tab ======
-function TodosTab() {
-  const [todos, setTodos] = useState(() => ls.get("hq_todos", []));
+function TodosTab({ todos, setTodos }) {
   const [text, setText] = useState("");
-  useEffect(() => { ls.set("hq_todos", todos); }, [todos]);
 
   const add = () => {
     const t = text.trim(); if (!t) return;
@@ -1474,41 +1786,106 @@ function App() {
   const [active, setActive] = useState(() => ls.get("hq_active_tab", "home"));
   const [now, setNow] = useState(new Date());
 
+  // Lifted state — all four data tables live here so we can sync centrally
+  const [tools, setTools] = useState(() => ls.get("hq_tools", DEFAULT_TOOLS));
+  const [links, setLinks] = useState(() => ls.get("hq_links", DEFAULT_LINKS));
+  const [notes, setNotes] = useState(() => ls.get("hq_notes", []));
+  const [todos, setTodos] = useState(() => ls.get("hq_todos", []));
+
+  // Sync state
+  const [syncStatus, setSyncStatus] = useState(CLOUD_ENABLED ? "loading" : "local");
+  const [lastSync, setLastSync] = useState(null);
+  const hydratedRef = useRef(!CLOUD_ENABLED); // local-only: ready immediately
+  const inFlight = useRef(0);
+
+  // Clock tick
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Persist active tab locally
   useEffect(() => { ls.set("hq_active_tab", active); }, [active]);
 
-  // Live counts (polled so stats stay fresh after edits in other tabs)
-  const [, setTick] = useState(0);
-  useEffect(() => { const id = setInterval(() => setTick(t => t+1), 2000); return () => clearInterval(id); }, []);
-  const liveNotes = ls.get("hq_notes", []);
-  const liveTodos = ls.get("hq_todos", []);
-  const liveLinks = ls.get("hq_links", DEFAULT_LINKS);
+  // Persist data to localStorage on every change (cache for offline / next load)
+  useEffect(() => { ls.set("hq_tools", tools); }, [tools]);
+  useEffect(() => { ls.set("hq_links", links); }, [links]);
+  useEffect(() => { ls.set("hq_notes", notes); }, [notes]);
+  useEffect(() => { ls.set("hq_todos", todos); }, [todos]);
+
+  // === Cloud: initial load ===
+  const refreshFromCloud = () => {
+    if (!CLOUD_ENABLED) return;
+    setSyncStatus("loading");
+    gasLoad()
+      .then(data => {
+        if (data.tools) setTools(data.tools);
+        if (data.links) setLinks(data.links);
+        if (data.notes) setNotes(data.notes);
+        if (data.todos) setTodos(data.todos);
+        hydratedRef.current = true;
+        setSyncStatus("synced");
+        setLastSync(new Date());
+      })
+      .catch(err => {
+        console.warn("Cloud load failed:", err.message);
+        hydratedRef.current = true; // allow local-only writes from now on
+        setSyncStatus("error");
+      });
+  };
+  useEffect(() => { refreshFromCloud(); /* once */ }, []);
+
+  // === Cloud: debounced save per table ===
+  const useCloudSave = (table, data) => {
+    useEffect(() => {
+      if (!CLOUD_ENABLED || !hydratedRef.current) return;
+      const t = setTimeout(() => {
+        inFlight.current++;
+        setSyncStatus("saving");
+        gasSave(table, data)
+          .then(() => {
+            inFlight.current = Math.max(0, inFlight.current - 1);
+            if (inFlight.current === 0) {
+              setSyncStatus("synced");
+              setLastSync(new Date());
+            }
+          })
+          .catch(err => {
+            console.warn("Cloud save failed [" + table + "]:", err.message);
+            inFlight.current = Math.max(0, inFlight.current - 1);
+            setSyncStatus("error");
+          });
+      }, CLOUD_CONFIG.debounce_ms);
+      return () => clearTimeout(t);
+    }, [data]);
+  };
+  useCloudSave("tools", tools);
+  useCloudSave("links", links);
+  useCloudSave("notes", notes);
+  useCloudSave("todos", todos);
 
   return (
     <div className="app">
-      <Header now={now} />
+      <Header now={now} syncStatus={syncStatus} onRefresh={refreshFromCloud} lastSync={lastSync} />
       <TabNav active={active} setActive={setActive} />
 
       {active === "home" && (
         <HomeTab
           now={now}
-          notesCount={liveNotes.length}
-          todosCount={liveTodos.length}
-          todosOpen={liveTodos.filter(t => !t.done).length}
-          linksCount={liveLinks.length}
+          notesCount={notes.length}
+          todosCount={todos.length}
+          todosOpen={todos.filter(t => !t.done).length}
+          linksCount={links.length}
         />
       )}
-      {active === "tools" && <ToolsTab />}
-      {active === "links" && <LinksTab />}
-      {active === "notes" && <NotesTab />}
-      {active === "todos" && <TodosTab />}
+      {active === "tools" && <ToolsTab tools={tools} setTools={setTools} />}
+      {active === "links" && <LinksTab links={links} setLinks={setLinks} />}
+      {active === "notes" && <NotesTab notes={notes} setNotes={setNotes} />}
+      {active === "todos" && <TodosTab todos={todos} setTodos={setTodos} />}
 
       <div className="footer">
         <div>© {now.getFullYear()} PAUL TONG · 童保舜 · Crafted with <span className="heart">♥</span></div>
-        <div>v2.0 · Vibrant Edition</div>
+        <div>v3.0 · {CLOUD_ENABLED ? "Cloud Sync" : "Local Mode"}</div>
       </div>
     </div>
   );
