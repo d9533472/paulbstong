@@ -267,6 +267,188 @@ body::after {
   flex-wrap: wrap;
 }
 
+/* Settings gear button */
+.settings-btn {
+  width: 36px; height: 36px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 16px;
+  display: grid; place-items: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.settings-btn:hover {
+  background: var(--surface-hover);
+  color: var(--cyan);
+  transform: rotate(60deg);
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 3, 15, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: backdropIn 0.2s ease;
+}
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal {
+  background: linear-gradient(180deg, var(--bg-2), var(--bg));
+  border: 1px solid var(--border-2);
+  border-radius: 22px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px -10px rgba(0,0,0,0.6);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  border: none;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: grid; place-items: center;
+}
+.modal-close:hover { background: var(--coral); color: #fff; transform: scale(1.08) rotate(90deg); }
+
+.modal-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.modal-field { display: flex; flex-direction: column; gap: 6px; }
+.modal-field label {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.modal-field label .optional {
+  font-weight: 400;
+  color: var(--text-3);
+  font-size: 11px;
+  margin-left: 4px;
+}
+.modal-field input {
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  transition: all 0.2s;
+  width: 100%;
+}
+.modal-field input::placeholder { color: var(--text-4); }
+.modal-field input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 4px var(--cyan-glow);
+}
+.modal-hint {
+  font-size: 11px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.modal-hint code {
+  font-family: var(--mono);
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+  font-size: 10.5px;
+}
+.secret-row { display: flex; gap: 8px; }
+.secret-row input { flex: 1; min-width: 0; }
+.btn-icon {
+  width: 44px; height: 44px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text);
+  flex: 0 0 44px;
+  transition: all 0.2s;
+}
+.btn-icon:hover { background: var(--surface-hover); }
+
+.test-result {
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: var(--mono);
+  line-height: 1.5;
+}
+.test-result.ok  { background: rgba(52, 211, 153, 0.12); color: var(--mint); border: 1px solid rgba(52, 211, 153, 0.3); }
+.test-result.err { background: rgba(251, 113, 133, 0.12); color: var(--coral); border: 1px solid rgba(251, 113, 133, 0.3); }
+
+.modal-status {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  letter-spacing: 0.04em;
+}
+.modal-status .badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 6px;
+  font-size: 10px;
+}
+.modal-status .badge.on  { background: rgba(52, 211, 153, 0.15); color: var(--mint); }
+.modal-status .badge.off { background: var(--surface-hover); color: var(--text-3); }
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.modal-actions { display: flex; gap: 8px; }
+
 @media (max-width: 540px) {
   .header { flex-direction: column; align-items: stretch; gap: 12px; }
   .header-meta { align-self: flex-start; }
@@ -645,7 +827,7 @@ body::after {
   top: 10px; right: 10px;
   display: flex;
   gap: 4px;
-  opacity: 0;
+  opacity: 0.65;
   transition: opacity 0.2s;
   z-index: 2;
 }
@@ -668,10 +850,6 @@ body::after {
 .tool-action:hover { transform: scale(1.12); }
 .tool-action.edit:hover { background: var(--cyan); color: #0d0a1f; }
 .tool-action.del:hover  { background: var(--coral); color: #fff; }
-/* Always show on touch devices (no hover) */
-@media (hover: none) {
-  .tool-actions { opacity: 1; }
-}
 
 /* Add / Edit Tool Form */
 .add-tool-form {
@@ -1215,14 +1393,25 @@ body::after {
 const { useState, useEffect, useMemo, useRef } = React;
 
 // =====================================================================
-// CLOUD SYNC CONFIG — fill in to enable cross-device sync via Google Apps Script.
-// Leave gas_url as "" for local-only mode (data stays on this device).
+// CLOUD SYNC — config can be set via Settings UI (⚙ icon, top-right)
+// or by editing CLOUD_DEFAULTS below. UI values override file values.
 // =====================================================================
-const CLOUD_CONFIG = {
-  gas_url: "https://script.google.com/macros/s/AKfycbzM0GGTl24zcKoyDEV1dOowSjqSc5DxM5U9KFpQAQGBzakqPyvKf_EIUdG5d_-YczmvZg/exec",       // e.g. "https://script.google.com/macros/s/AKfyc.../exec"
-  secret:  "paul",       // optional shared secret (must match SECRET in Code.gs); "" for none
+const CLOUD_DEFAULTS = {
+  gas_url: "",       // e.g. "https://script.google.com/macros/s/AKfyc.../exec"
+  secret:  "",       // optional shared secret (must match SECRET in Code.gs)
   debounce_ms: 1200, // delay between last edit and cloud save
 };
+function readCloudConfig() {
+  let url = "", sec = "";
+  try { url = JSON.parse(localStorage.getItem("hq_gas_url") || "\"\""); } catch {}
+  try { sec = JSON.parse(localStorage.getItem("hq_secret")  || "\"\""); } catch {}
+  return {
+    gas_url: url || CLOUD_DEFAULTS.gas_url,
+    secret:  sec || CLOUD_DEFAULTS.secret,
+    debounce_ms: CLOUD_DEFAULTS.debounce_ms,
+  };
+}
+const CLOUD_CONFIG = readCloudConfig();
 const CLOUD_ENABLED = !!CLOUD_CONFIG.gas_url;
 
 // ====== TOOLS — Default seed (editable in UI, saved to localStorage) ======
@@ -1343,7 +1532,7 @@ const SYNC_LABELS = {
   error:   "連線失敗",
   local:   "本機模式",
 };
-function Header({ now, syncStatus, onRefresh, lastSync }) {
+function Header({ now, syncStatus, onRefresh, lastSync, onSettingsClick }) {
   const tip = lastSync ? "最後同步：" + lastSync.toLocaleTimeString("zh-TW") : "尚未同步";
   return (
     <div className="header">
@@ -1355,6 +1544,7 @@ function Header({ now, syncStatus, onRefresh, lastSync }) {
         </div>
       </div>
       <div className="header-right">
+        <button className="settings-btn" onClick={onSettingsClick} title="雲端同步設定">⚙</button>
         <div className="sync-pill" data-status={syncStatus} title={tip}>
           <span className="sync-dot"></span>
           <span>{SYNC_LABELS[syncStatus] || syncStatus}</span>
@@ -1370,6 +1560,116 @@ function Header({ now, syncStatus, onRefresh, lastSync }) {
         <div className="header-meta">
           <span className="live-dot"></span>
           Banqiao · {pad(now.getHours())}:{pad(now.getMinutes())} GMT+8
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ====== Settings Modal ======
+function SettingsModal({ open, onClose }) {
+  const [gasUrl, setGasUrl] = useState(CLOUD_CONFIG.gas_url || "");
+  const [secret, setSecret] = useState(CLOUD_CONFIG.secret || "");
+  const [showSecret, setShowSecret] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState(null);
+
+  if (!open) return null;
+
+  const test = () => {
+    const u = gasUrl.trim();
+    if (!u) { setTestResult({ ok: false, msg: "請先輸入 GAS URL" }); return; }
+    setTesting(true); setTestResult(null);
+    const url = u + "?action=ping" + (secret ? "&secret=" + encodeURIComponent(secret) : "");
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) setTestResult({ ok: false, msg: "✗ 錯誤：" + data.error });
+        else setTestResult({ ok: true, msg: "✓ 連線成功！伺服器時間 " + new Date(data.time).toLocaleTimeString("zh-TW") });
+      })
+      .catch(err => setTestResult({ ok: false, msg: "✗ 連線失敗：" + err.message }))
+      .finally(() => setTesting(false));
+  };
+
+  const save = () => {
+    const u = gasUrl.trim();
+    ls.set("hq_gas_url", u);
+    ls.set("hq_secret", secret);
+    if (confirm("設定已儲存！需重新載入頁面才會生效，現在重新載入嗎？")) location.reload();
+    else onClose();
+  };
+
+  const reset = () => {
+    if (!confirm("清除雲端設定回到本機模式？\n（資料不會被刪除）")) return;
+    localStorage.removeItem("hq_gas_url");
+    localStorage.removeItem("hq_secret");
+    if (confirm("已清除！要重新載入頁面嗎？")) location.reload();
+    else onClose();
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>⚙ 雲端同步設定</h2>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          <div className="modal-status">
+            目前狀態
+            <span className={`badge ${CLOUD_ENABLED ? "on" : "off"}`}>
+              {CLOUD_ENABLED ? "雲端已啟用" : "本機模式"}
+            </span>
+          </div>
+
+          <div className="modal-field">
+            <label>Google Apps Script Web App URL</label>
+            <input
+              type="url"
+              placeholder="https://script.google.com/macros/s/.../exec"
+              value={gasUrl}
+              onChange={e => setGasUrl(e.target.value)}
+              spellCheck={false}
+            />
+            <div className="modal-hint">
+              部署 <code>Code.gs</code> 後在 Apps Script 「部署 → 管理部署作業」取得的 URL。
+            </div>
+          </div>
+
+          <div className="modal-field">
+            <label>Shared Secret <span className="optional">（選填）</span></label>
+            <div className="secret-row">
+              <input
+                type={showSecret ? "text" : "password"}
+                placeholder="若 Code.gs 有設 SECRET，這裡填一樣的"
+                value={secret}
+                onChange={e => setSecret(e.target.value)}
+                spellCheck={false}
+              />
+              <button className="btn-icon" onClick={() => setShowSecret(!showSecret)} title={showSecret ? "隱藏" : "顯示"}>
+                {showSecret ? "🙈" : "👁"}
+              </button>
+            </div>
+            <div className="modal-hint">
+              對應 Code.gs 中的 <code>SECRET</code> 變數。可空（URL 即為唯一憑證）。
+            </div>
+          </div>
+
+          <button className="btn btn-ghost" onClick={test} disabled={testing}>
+            {testing ? "⏳ 測試中…" : "🔗 測試連線"}
+          </button>
+          {testResult && (
+            <div className={`test-result ${testResult.ok ? "ok" : "err"}`}>
+              {testResult.msg}
+            </div>
+          )}
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-danger" onClick={reset}>清除設定</button>
+          <div className="modal-actions">
+            <button className="btn btn-ghost" onClick={onClose}>取消</button>
+            <button className="btn" onClick={save}>儲存</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1785,6 +2085,7 @@ function TodosTab({ todos, setTodos }) {
 function App() {
   const [active, setActive] = useState(() => ls.get("hq_active_tab", "home"));
   const [now, setNow] = useState(new Date());
+  const [showSettings, setShowSettings] = useState(false);
 
   // Lifted state — all four data tables live here so we can sync centrally
   const [tools, setTools] = useState(() => ls.get("hq_tools", DEFAULT_TOOLS));
@@ -1866,7 +2167,13 @@ function App() {
 
   return (
     <div className="app">
-      <Header now={now} syncStatus={syncStatus} onRefresh={refreshFromCloud} lastSync={lastSync} />
+      <Header
+        now={now}
+        syncStatus={syncStatus}
+        onRefresh={refreshFromCloud}
+        lastSync={lastSync}
+        onSettingsClick={() => setShowSettings(true)}
+      />
       <TabNav active={active} setActive={setActive} />
 
       {active === "home" && (
@@ -1885,8 +2192,10 @@ function App() {
 
       <div className="footer">
         <div>© {now.getFullYear()} PAUL TONG · 童保舜 · Crafted with <span className="heart">♥</span></div>
-        <div>v3.0 · {CLOUD_ENABLED ? "Cloud Sync" : "Local Mode"}</div>
+        <div>v3.1 · {CLOUD_ENABLED ? "Cloud Sync" : "Local Mode"}</div>
       </div>
+
+      <SettingsModal open={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 }
