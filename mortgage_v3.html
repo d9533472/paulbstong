@@ -3,16 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mortgage × Investment · 財務策略中心</title>
+<title>Mortgage × Investment · Paul's 財務策略 v5</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  * {
-    font-family: 'Inter', 'Noto Sans TC', sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-
+  * { font-family: 'Inter', 'Noto Sans TC', sans-serif; -webkit-font-smoothing: antialiased; }
   .font-mono { font-family: 'JetBrains Mono', monospace; }
 
   body {
@@ -22,65 +18,41 @@
     overflow-x: hidden;
   }
 
-  /* 動態背景 */
   .bg-gradient-mesh {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
+    position: fixed; inset: 0; z-index: 0; overflow: hidden;
   }
-
   .bg-gradient-mesh::before {
-    content: '';
-    position: absolute;
-    width: 600px;
-    height: 600px;
+    content: ''; position: absolute;
+    width: 600px; height: 600px;
     background: radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%);
-    top: -200px;
-    right: -100px;
+    top: -200px; right: -100px;
     animation: float-1 20s ease-in-out infinite;
   }
-
   .bg-gradient-mesh::after {
-    content: '';
-    position: absolute;
-    width: 700px;
-    height: 700px;
+    content: ''; position: absolute;
+    width: 700px; height: 700px;
     background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%);
-    bottom: -300px;
-    left: -150px;
+    bottom: -300px; left: -150px;
     animation: float-2 25s ease-in-out infinite;
   }
-
-  .bg-orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    z-index: 0;
-    pointer-events: none;
-  }
+  .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none; }
 
   @keyframes float-1 {
     0%, 100% { transform: translate(0, 0) scale(1); }
     50% { transform: translate(-100px, 100px) scale(1.2); }
   }
-
   @keyframes float-2 {
     0%, 100% { transform: translate(0, 0) scale(1); }
     50% { transform: translate(150px, -50px) scale(1.1); }
   }
 
-  /* 玻璃卡片 */
   .glass {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
-
   .glass-strong {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(30px) saturate(200%);
@@ -88,511 +60,418 @@
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  /* 漸層文字 */
-  .text-gradient-purple {
-    background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+  .text-gradient-purple { background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .text-gradient-cyan { background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .text-gradient-green { background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .text-gradient-amber { background: linear-gradient(135deg, #fbbf24 0%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .text-gradient-pink { background: linear-gradient(135deg, #f472b6 0%, #fb7185 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .text-gradient-rate1 { background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .text-gradient-rate2 { background: linear-gradient(135deg, #f472b6 0%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-  .text-gradient-cyan {
-    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-green {
-    background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-amber {
-    background: linear-gradient(135deg, #fbbf24 0%, #fb923c 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .text-gradient-pink {
-    background: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* 卡片 hover 效果 */
-  .card-hover {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-
+  .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
   .card-hover::before {
-    content: '';
-    position: absolute;
-    inset: 0;
+    content: ''; position: absolute; inset: 0;
     background: linear-gradient(135deg, transparent, rgba(255,255,255,0.05), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.6s;
+    transform: translateX(-100%); transition: transform 0.6s;
   }
+  .card-hover:hover::before { transform: translateX(100%); }
+  .card-hover:hover { transform: translateY(-4px); border-color: rgba(167, 139, 250, 0.3); }
 
-  .card-hover:hover::before {
-    transform: translateX(100%);
-  }
-
-  .card-hover:hover {
-    transform: translateY(-4px);
-    border-color: rgba(167, 139, 250, 0.3);
-  }
-
-  /* 滑桿 */
   input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
+    -webkit-appearance: none; appearance: none;
     height: 4px;
     background: linear-gradient(to right,
-      #a78bfa 0%,
-      #ec4899 var(--value, 50%),
-      rgba(255,255,255,0.1) var(--value, 50%),
-      rgba(255,255,255,0.1) 100%);
-    border-radius: 999px;
-    outline: none;
-    cursor: pointer;
+      #a78bfa 0%, #ec4899 var(--value, 50%),
+      rgba(255,255,255,0.1) var(--value, 50%), rgba(255,255,255,0.1) 100%);
+    border-radius: 999px; outline: none; cursor: pointer;
   }
-
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow:
-      0 0 0 2px #a78bfa,
-      0 4px 16px rgba(167, 139, 250, 0.6);
+    -webkit-appearance: none; appearance: none;
+    width: 20px; height: 20px; background: white; border-radius: 50%; cursor: pointer;
+    box-shadow: 0 0 0 2px #a78bfa, 0 4px 16px rgba(167, 139, 250, 0.6);
     transition: all 0.2s;
   }
-
   input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(1.2);
-    box-shadow:
-      0 0 0 3px #ec4899,
-      0 6px 20px rgba(236, 72, 153, 0.7);
+    box-shadow: 0 0 0 3px #ec4899, 0 6px 20px rgba(236, 72, 153, 0.7);
   }
 
-  input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #a78bfa;
-  }
-
-  /* Tab 按鈕 */
-  .tab-btn {
+  .scenario-btn {
     transition: all 0.3s;
-    color: rgba(226, 232, 240, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .scenario-btn:hover {
+    border-color: rgba(167, 139, 250, 0.4);
+    transform: translateY(-2px);
+  }
+  .scenario-btn.active {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(236, 72, 153, 0.15));
+    border-color: rgba(167, 139, 250, 0.6);
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.25);
   }
 
-  .tab-btn.active {
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(236, 72, 153, 0.2));
-    color: white;
-    border-color: rgba(167, 139, 250, 0.5);
-    box-shadow: 0 4px 16px rgba(167, 139, 250, 0.2);
-  }
-
-  /* Phase badges */
   .badge {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
+    font-size: 10px; padding: 2px 8px; border-radius: 999px;
+    font-weight: 600; letter-spacing: 0.05em;
   }
+  .badge-rate1 { background: rgba(96, 165, 250, 0.15); color: #93c5fd; border: 1px solid rgba(96, 165, 250, 0.3); }
+  .badge-rate2 { background: rgba(244, 114, 182, 0.15); color: #f9a8d4; border: 1px solid rgba(244, 114, 182, 0.3); }
+  .badge-final { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+  .badge-best { background: linear-gradient(135deg, #fbbf24, #fb923c); color: #1f2937; }
 
-  .badge-grace {
-    background: rgba(251, 191, 36, 0.15);
-    color: #fbbf24;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-  }
-
-  .badge-accelerated {
-    background: rgba(167, 139, 250, 0.15);
-    color: #c4b5fd;
-    border: 1px solid rgba(167, 139, 250, 0.3);
-  }
-
-  .badge-final {
-    background: rgba(74, 222, 128, 0.15);
-    color: #4ade80;
-    border: 1px solid rgba(74, 222, 128, 0.3);
-  }
-
-  /* 動畫 */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .fade-in {
-    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) backwards;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
-  }
-
-  .shimmer {
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(255,255,255,0.05) 50%,
-      transparent 100%);
-    background-size: 1000px 100%;
-    animation: shimmer 3s infinite;
-  }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) backwards; }
 
   @keyframes pulse-glow {
     0%, 100% { box-shadow: 0 0 20px rgba(167, 139, 250, 0.3); }
     50% { box-shadow: 0 0 40px rgba(167, 139, 250, 0.6); }
   }
+  .glow { animation: pulse-glow 3s ease-in-out infinite; }
 
-  .glow {
-    animation: pulse-glow 3s ease-in-out infinite;
+  .scroll-area::-webkit-scrollbar { width: 4px; }
+  .scroll-area::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+  .scroll-area::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #a78bfa, #ec4899); border-radius: 999px; }
+
+  .hero-number { font-feature-settings: 'tnum'; letter-spacing: -0.02em; }
+
+  .progress-bar {
+    height: 6px; background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px; overflow: hidden; position: relative;
   }
-
-  /* 表格 */
-  .scroll-area::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .scroll-area::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.02);
-  }
-
-  .scroll-area::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #a78bfa, #ec4899);
-    border-radius: 999px;
-  }
-
-  /* Investment cards highlight */
-  .invest-card {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-  }
-
-  .invest-card.recommended {
-    background: linear-gradient(135deg,
-      rgba(74, 222, 128, 0.1) 0%,
-      rgba(34, 211, 238, 0.05) 100%);
-    border-color: rgba(74, 222, 128, 0.4);
-    box-shadow: 0 8px 32px rgba(74, 222, 128, 0.15);
-  }
-
-  .invest-card.recommended::after {
-    content: '推薦';
-    position: absolute;
-    top: -8px;
-    right: 12px;
-    background: linear-gradient(135deg, #4ade80 0%, #22d3ee 100%);
-    color: #064e3b;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 10px;
-    border-radius: 999px;
-    letter-spacing: 0.1em;
-  }
-
-  .section-title {
-    background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.3), transparent);
-    height: 1px;
-    margin: 0 16px;
-  }
-
-  /* Hero number */
-  .hero-number {
-    font-feature-settings: 'tnum';
-    letter-spacing: -0.02em;
+  .progress-fill {
+    height: 100%; border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 </style>
 </head>
 <body class="relative">
 
-<!-- Animated Background -->
 <div class="bg-gradient-mesh"></div>
 <div class="bg-orb" style="width: 250px; height: 250px; background: rgba(236, 72, 153, 0.3); top: 30%; right: -50px;"></div>
 <div class="bg-orb" style="width: 350px; height: 350px; background: rgba(34, 211, 238, 0.25); top: 60%; left: -80px;"></div>
 
 <div class="relative z-10 max-w-3xl mx-auto p-4 md:p-8">
 
-  <!-- Hero Header -->
+  <!-- Hero -->
   <div class="text-center mb-8 fade-in">
     <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-4 text-xs font-semibold tracking-widest text-purple-300">
       <span class="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
-      FINANCIAL STRATEGY CENTER
+      WEALTH STRATEGY · v5
     </div>
     <h1 class="text-4xl md:text-5xl font-black mb-3 hero-number">
-      <span class="text-gradient-purple">房貸</span>
-      <span class="text-white/40 mx-2">×</span>
+      <span class="text-gradient-purple">還款</span>
+      <span class="text-white/40 mx-2">vs</span>
       <span class="text-gradient-cyan">投資</span>
     </h1>
-    <p class="text-white/60 text-sm">智能還款規劃與套利分析</p>
+    <p class="text-white/60 text-sm">每月 10 萬怎麼分配？30 年後差多少？</p>
   </div>
 
-  <!-- 核心統計 (4 cards) -->
-  <div class="grid grid-cols-2 gap-3 mb-8 fade-in" style="animation-delay: 0.1s;">
-    <div class="glass card-hover rounded-2xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-xs text-white/50 font-semibold tracking-wider uppercase">寬限期月付</span>
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs">💰</div>
+  <!-- 條件展示 -->
+  <div class="glass-strong rounded-2xl p-4 md:p-5 mb-6 fade-in" style="animation-delay: 0.05s;">
+    <div class="grid grid-cols-4 gap-2">
+      <div class="text-center">
+        <div class="text-[10px] text-white/50 font-semibold tracking-widest uppercase mb-1">本金</div>
+        <div class="text-base md:text-lg font-bold text-white hero-number">600 萬</div>
       </div>
-      <div class="text-2xl md:text-3xl font-bold text-gradient-purple hero-number" id="stat-standard">$24,020</div>
-      <div class="text-[10px] text-white/40 mt-1">每月本利和</div>
-    </div>
-
-    <div class="glass card-hover rounded-2xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-xs text-white/50 font-semibold tracking-wider uppercase">提前清償</span>
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-xs">🎯</div>
+      <div class="text-center border-l border-white/10">
+        <div class="text-[10px] text-white/50 font-semibold tracking-widest uppercase mb-1">前 2 年</div>
+        <div class="text-base md:text-lg font-bold text-gradient-rate1 hero-number">2.60%</div>
       </div>
-      <div class="text-2xl md:text-3xl font-bold text-gradient-amber hero-number" id="stat-payoff">第 95 期</div>
-      <div class="text-[10px] text-white/40 mt-1" id="stat-payoff-sub">約 7.9 年</div>
-    </div>
-
-    <div class="glass card-hover rounded-2xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-xs text-white/50 font-semibold tracking-wider uppercase">總繳利息</span>
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-xs">📊</div>
+      <div class="text-center border-l border-white/10">
+        <div class="text-[10px] text-white/50 font-semibold tracking-widest uppercase mb-1">第 3 年起</div>
+        <div class="text-base md:text-lg font-bold text-gradient-rate2 hero-number">2.75%</div>
       </div>
-      <div class="text-2xl md:text-3xl font-bold text-gradient-pink hero-number" id="stat-interest">$884K</div>
-      <div class="text-[10px] text-white/40 mt-1">vs 標準 $2.65M</div>
-    </div>
-
-    <div class="glass card-hover rounded-2xl p-4">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-xs text-white/50 font-semibold tracking-wider uppercase">節省利息</span>
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-center text-xs">✨</div>
-      </div>
-      <div class="text-2xl md:text-3xl font-bold text-gradient-green hero-number" id="stat-saved">$1.76M</div>
-      <div class="text-[10px] text-white/40 mt-1" id="stat-saved-sub">省一台車</div>
-    </div>
-  </div>
-
-  <!-- 參數調整 -->
-  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.2s;">
-    <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-bold text-white flex items-center gap-2">
-        <span class="text-xl">⚙️</span>
-        <span>調整參數</span>
-      </h2>
-      <span class="text-[10px] text-white/40 tracking-widest">REAL-TIME</span>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-x-6 gap-y-5">
-      <!-- 本金 -->
-      <div>
-        <div class="flex justify-between items-baseline mb-2.5">
-          <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">貸款本金</label>
-          <span class="text-base font-bold text-gradient-purple font-mono" id="principal-out">600 萬</span>
-        </div>
-        <input type="range" min="100" max="2000" value="600" step="10" id="principal" />
-      </div>
-
-      <!-- 利率 -->
-      <div>
-        <div class="flex justify-between items-baseline mb-2.5">
-          <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">年利率</label>
-          <span class="text-base font-bold text-gradient-purple font-mono" id="rate-out">2.60%</span>
-        </div>
-        <input type="range" min="1" max="5" value="2.6" step="0.05" id="rate" />
-      </div>
-
-      <!-- 年期 -->
-      <div>
-        <div class="flex justify-between items-baseline mb-2.5">
-          <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">貸款年期</label>
-          <span class="text-base font-bold text-gradient-purple font-mono" id="years-out">30 年</span>
-        </div>
-        <input type="range" min="10" max="40" value="30" step="1" id="years" />
-      </div>
-
-      <!-- 寬限期 -->
-      <div>
-        <div class="flex justify-between items-baseline mb-2.5">
-          <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">寬限期月數</label>
-          <span class="text-base font-bold text-gradient-purple font-mono" id="grace-out">36</span>
-        </div>
-        <input type="range" min="0" max="60" value="36" step="1" id="grace" />
-      </div>
-
-      <!-- 月還款 -->
-      <div>
-        <div class="flex justify-between items-baseline mb-2.5">
-          <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">寬限後月還</label>
-          <span class="text-base font-bold text-gradient-purple font-mono" id="extra-out">10 萬</span>
-        </div>
-        <input type="range" min="20000" max="200000" value="100000" step="5000" id="extra" />
-      </div>
-
-      <!-- 留存 -->
-      <div>
-        <div class="flex justify-between items-baseline mb-2.5">
-          <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">最後留存</label>
-          <span class="text-base font-bold text-gradient-purple font-mono" id="final-out">10 萬</span>
-        </div>
-        <input type="range" min="0" max="500000" value="100000" step="10000" id="final" />
+      <div class="text-center border-l border-white/10">
+        <div class="text-[10px] text-white/50 font-semibold tracking-widest uppercase mb-1">月現金流</div>
+        <div class="text-base md:text-lg font-bold text-gradient-purple hero-number">10 萬</div>
       </div>
     </div>
   </div>
 
-  <!-- 圖表 -->
-  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.3s;">
+  <!-- 投資假設 -->
+  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.1s;">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-bold text-white flex items-center gap-2">
-        <span class="text-xl">📈</span>
-        <span>本金遞減曲線</span>
+      <h2 class="text-base font-bold text-white flex items-center gap-2">
+        <span class="text-lg">📈</span>
+        <span>投資假設</span>
       </h2>
+      <span class="text-[10px] text-white/40 tracking-widest">ASSUMPTION</span>
     </div>
-    <div class="relative" style="height: 260px;">
-      <canvas id="balanceChart" role="img" aria-label="本金遞減">本金遞減</canvas>
+    <div class="flex justify-between items-baseline mb-2.5">
+      <label class="text-xs font-semibold text-white/70 tracking-wider uppercase">年化投資報酬率</label>
+      <span class="text-2xl font-bold text-gradient-cyan font-mono" id="invest-rate-out">5.0%</span>
     </div>
-    <div class="flex flex-wrap justify-center gap-4 mt-4 text-xs">
-      <div class="flex items-center gap-1.5">
-        <span class="w-2.5 h-2.5 rounded-full" style="background: #fbbf24; box-shadow: 0 0 8px #fbbf24;"></span>
-        <span class="text-white/70">寬限期</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <span class="w-2.5 h-2.5 rounded-full" style="background: #a78bfa; box-shadow: 0 0 8px #a78bfa;"></span>
-        <span class="text-white/70">加速還款</span>
-      </div>
-      <div class="flex items-center gap-1.5">
-        <span class="w-2.5 h-2.5 rounded-full" style="background: #4ade80; box-shadow: 0 0 8px #4ade80;"></span>
-        <span class="text-white/70">留存階段</span>
-      </div>
+    <input type="range" min="2" max="12" value="5" step="0.5" id="invest-rate" />
+    <div class="grid grid-cols-4 gap-2 mt-3 text-[10px] text-white/40">
+      <div>3% 保守</div>
+      <div class="text-center">5% 穩健</div>
+      <div class="text-center">7% 平衡</div>
+      <div class="text-right">10% 積極</div>
     </div>
   </div>
 
-  <!-- 投資對比區塊 (新增的核心) -->
-  <div class="mb-6 fade-in" style="animation-delay: 0.4s;">
-    <div class="text-center mb-5">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-3 text-xs font-semibold tracking-widest text-cyan-300">
-        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-        INVESTMENT ANALYSIS
-      </div>
-      <h2 class="text-2xl md:text-3xl font-black mb-2">
-        <span class="text-gradient-cyan">投資 vs 還款</span>
-      </h2>
-      <p class="text-white/60 text-sm">需要多少本金，每年收益就能 cover 房貸？</p>
+  <!-- 四個方案選擇 -->
+  <div class="mb-6 fade-in" style="animation-delay: 0.2s;">
+    <div class="text-center mb-4">
+      <h2 class="text-xl font-bold text-white">選擇你的策略</h2>
+      <p class="text-xs text-white/50 mt-1">每月 10 萬怎麼分配？</p>
     </div>
-
-    <!-- 房貸成本 highlight -->
-    <div class="glass-strong rounded-2xl p-5 mb-4 text-center glow">
-      <div class="text-xs text-white/50 font-semibold tracking-widest uppercase mb-2">每年要繳房貸</div>
-      <div class="text-4xl md:text-5xl font-black text-gradient-pink hero-number" id="yearly-payment">$288,245</div>
-      <div class="text-xs text-white/40 mt-2">這就是你要"擊敗"的數字</div>
-    </div>
-
-    <!-- 投資情境卡片 -->
-    <div class="space-y-3" id="investment-cards">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="scenario-buttons">
       <!-- 動態生成 -->
     </div>
-
-    <!-- 套利分析 -->
-    <div class="glass rounded-2xl p-5 mt-5">
-      <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-        <span>💎</span>
-        <span>套利空間分析</span>
-        <span class="text-[10px] text-white/40 font-normal">（投報率 - 房貸利率）</span>
-      </h3>
-      <div class="space-y-2" id="arbitrage-list">
-        <!-- 動態生成 -->
-      </div>
-    </div>
   </div>
 
-  <!-- 還款表 -->
-  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.5s;">
-    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-      <h2 class="text-lg font-bold text-white flex items-center gap-2">
-        <span class="text-xl">📋</span>
-        <span>還款明細</span>
+  <!-- 主要結果展示 -->
+  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.3s;">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-bold text-white flex items-center gap-2">
+        <span class="text-lg">🎯</span>
+        <span>30 年後結果</span>
       </h2>
-      <div class="flex gap-1.5 glass p-1 rounded-xl">
-        <button id="btn-key" class="tab-btn active px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent">關鍵期</button>
-        <button id="btn-yearly" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent">每年</button>
-        <button id="btn-all" class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent">全部</button>
-      </div>
+      <span class="text-[10px] text-white/40 tracking-widest" id="current-scenario-label">SCENARIO B</span>
     </div>
 
-    <div class="scroll-area overflow-y-auto rounded-xl glass" style="max-height: 360px;">
-      <table class="w-full text-sm">
-        <thead class="sticky top-0 backdrop-blur-xl" style="background: rgba(15, 23, 42, 0.95);">
-          <tr>
-            <th class="px-3 py-3 text-left text-[10px] font-bold text-white/50 tracking-widest uppercase">期數</th>
-            <th class="px-3 py-3 text-right text-[10px] font-bold text-white/50 tracking-widest uppercase">月繳</th>
-            <th class="px-3 py-3 text-right text-[10px] font-bold text-white/50 tracking-widest uppercase">利息</th>
-            <th class="px-3 py-3 text-right text-[10px] font-bold text-white/50 tracking-widest uppercase">本金</th>
-            <th class="px-3 py-3 text-right text-[10px] font-bold text-white/50 tracking-widest uppercase">剩餘</th>
-          </tr>
-        </thead>
-        <tbody id="schedule-body" class="divide-y divide-white/5"></tbody>
-      </table>
+    <!-- 大數字 -->
+    <div class="text-center mb-5 glow rounded-2xl p-4">
+      <div class="text-xs text-white/50 font-semibold tracking-widest uppercase mb-2">投資組合 30 年後價值</div>
+      <div class="text-4xl md:text-5xl font-black text-gradient-green hero-number" id="invest-final">$0</div>
+      <div class="text-sm text-white/60 mt-2" id="invest-final-wan">約 0 萬</div>
+    </div>
+
+    <!-- 4 個小卡 -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="glass rounded-xl p-3">
+        <div class="text-[10px] text-white/50 font-semibold tracking-wider uppercase mb-1">房貸還清</div>
+        <div class="text-lg font-bold text-gradient-purple hero-number" id="payoff-time">第 64 期</div>
+        <div class="text-[10px] text-white/40 mt-0.5" id="payoff-years">5.3 年</div>
+      </div>
+      <div class="glass rounded-xl p-3">
+        <div class="text-[10px] text-white/50 font-semibold tracking-wider uppercase mb-1">房貸總利息</div>
+        <div class="text-lg font-bold text-gradient-pink hero-number" id="total-interest">$513K</div>
+        <div class="text-[10px] text-white/40 mt-0.5" id="vs-standard">vs 標準 $2.80M</div>
+      </div>
+      <div class="glass rounded-xl p-3">
+        <div class="text-[10px] text-white/50 font-semibold tracking-wider uppercase mb-1">每月分配</div>
+        <div class="text-sm font-bold text-white" id="allocation"><span class="text-gradient-rate1">10萬還</span> · <span class="text-gradient-cyan">0萬投</span></div>
+        <div class="text-[10px] text-white/40 mt-0.5">前 64 期</div>
+      </div>
+      <div class="glass rounded-xl p-3">
+        <div class="text-[10px] text-white/50 font-semibold tracking-wider uppercase mb-1">vs 全力還款</div>
+        <div class="text-lg font-bold hero-number" id="vs-a">$0</div>
+        <div class="text-[10px] text-white/40 mt-0.5" id="vs-a-label">差距</div>
+      </div>
     </div>
   </div>
 
-  <!-- 最終策略建議 -->
-  <div class="glass-strong rounded-3xl p-6 md:p-8 fade-in" style="animation-delay: 0.6s;">
+  <!-- 投資組合成長圖 -->
+  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.4s;">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-bold text-white flex items-center gap-2">
+        <span class="text-lg">📊</span>
+        <span>四方案 30 年走勢對比</span>
+      </h2>
+    </div>
+    <div class="relative" style="height: 280px;">
+      <canvas id="comparisonChart" role="img" aria-label="四方案對比">四方案對比</canvas>
+    </div>
+    <div class="flex flex-wrap justify-center gap-3 mt-4 text-xs">
+      <div class="flex items-center gap-1.5">
+        <span class="w-3 h-1 rounded-full" style="background: #a78bfa;"></span>
+        <span class="text-white/70">A · 全力還款</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-3 h-1 rounded-full" style="background: #22d3ee;"></span>
+        <span class="text-white/70">B · 8/2 平衡</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-3 h-1 rounded-full" style="background: #4ade80;"></span>
+        <span class="text-white/70">C · 5/5 平衡</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-3 h-1 rounded-full" style="background: #fbbf24;"></span>
+        <span class="text-white/70">D · 3/7 投資</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 關鍵洞察 -->
+  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.5s;">
+    <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4">
+      <span class="text-lg">💡</span>
+      <span>關鍵洞察</span>
+    </h2>
+    <div class="space-y-3" id="insights"></div>
+  </div>
+
+  <!-- 風險提醒 -->
+  <div class="glass-strong rounded-3xl p-5 md:p-6 mb-6 fade-in" style="animation-delay: 0.6s;">
+    <h2 class="text-base font-bold text-white flex items-center gap-2 mb-4">
+      <span class="text-lg">⚠️</span>
+      <span>每個方案的真實風險</span>
+    </h2>
+    <div class="space-y-3">
+      <div class="glass rounded-xl p-4" style="border-left: 3px solid #a78bfa;">
+        <div class="font-bold text-white mb-1.5 flex items-center gap-2">
+          <span>方案 A · 全力還款</span>
+          <span class="badge badge-rate1">低風險</span>
+        </div>
+        <div class="text-xs text-white/70 leading-relaxed space-y-1">
+          <div>✅ <span class="text-white">心理踏實</span>，5 年內還清房貸壓力小</div>
+          <div>✅ <span class="text-white">市場大跌時不影響</span>，反而現金流更穩</div>
+          <div>❌ <span class="text-white/60">5.3 年內錯過所有市場機會</span>，少累積 60 個月本金</div>
+          <div>❌ <span class="text-white/60">通膨損失</span>：5 年通膨累積約 12-15%，不投資 = 購買力下降</div>
+        </div>
+      </div>
+
+      <div class="glass rounded-xl p-4" style="border-left: 3px solid #22d3ee;">
+        <div class="font-bold text-white mb-1.5 flex items-center gap-2">
+          <span>方案 B · 8/2 平衡</span>
+          <span class="badge badge-rate1">低風險</span>
+        </div>
+        <div class="text-xs text-white/70 leading-relaxed space-y-1">
+          <div>✅ <span class="text-white">兩邊都有</span>，6.75 年還清，期間累積投資習慣</div>
+          <div>✅ <span class="text-white">每月 2 萬</span>定期定額很適合進場 ETF</div>
+          <div>⚠️ <span class="text-white/60">投資金額不夠大</span>，短期內看不到效果</div>
+        </div>
+      </div>
+
+      <div class="glass rounded-xl p-4" style="border-left: 3px solid #4ade80;">
+        <div class="font-bold text-white mb-1.5 flex items-center gap-2">
+          <span>方案 C · 5/5 平衡</span>
+          <span class="badge badge-rate2">中風險</span>
+        </div>
+        <div class="text-xs text-white/70 leading-relaxed space-y-1">
+          <div>✅ <span class="text-white">最佳平衡點</span>，房貸 11.6 年還清還算快</div>
+          <div>✅ <span class="text-white">每月 5 萬投資</span>金額有感，複利明顯</div>
+          <div>⚠️ <span class="text-white/60">市場大跌時</span>會看到帳面虧損，要扛得住心理壓力</div>
+          <div>⚠️ <span class="text-white/60">房貸還清前 11 年</span>，現金流壓力中等</div>
+        </div>
+      </div>
+
+      <div class="glass rounded-xl p-4" style="border-left: 3px solid #fbbf24;">
+        <div class="font-bold text-white mb-1.5 flex items-center gap-2">
+          <span>方案 D · 3/7 投資導向</span>
+          <span class="badge" style="background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3);">中高風險</span>
+        </div>
+        <div class="text-xs text-white/70 leading-relaxed space-y-1">
+          <div>✅ <span class="text-white">長期報酬最高</span>，30 年後資產差距 1-3 倍</div>
+          <div>✅ <span class="text-white">最大化複利</span>效應，越早投入越強</div>
+          <div>❌ <span class="text-white/60">房貸 22 年才還清</span>，會背 20+ 年</div>
+          <div>❌ <span class="text-white/60">市場崩盤時壓力大</span>，2008、2020 等級的回檔可能讓你想停損</div>
+          <div>❌ <span class="text-white/60">3 萬還款額太接近利息</span>，前期本金降很慢</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 我的建議 -->
+  <div class="glass-strong rounded-3xl p-6 md:p-8 fade-in" style="animation-delay: 0.7s;">
     <div class="text-center mb-5">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass mb-3 text-xs font-semibold tracking-widest text-amber-300">
         <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
         FINAL RECOMMENDATION
       </div>
       <h2 class="text-2xl md:text-3xl font-black">
-        <span class="text-gradient-amber">最終策略建議</span>
+        <span class="text-gradient-amber">給你的建議</span>
       </h2>
     </div>
 
-    <div class="space-y-4" id="final-strategy">
-      <!-- 動態生成 -->
+    <div class="space-y-4">
+      <div class="glass rounded-2xl p-5" style="background: linear-gradient(135deg, rgba(74,222,128,0.08), rgba(34,211,238,0.05));">
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-center text-xl flex-shrink-0">⭐</div>
+          <div>
+            <div class="font-bold text-white text-lg mb-2">推薦：方案 B 或 C（依個性）</div>
+            <div class="text-sm text-white/70 leading-relaxed space-y-2">
+              <div><strong class="text-white">如果你比較保守</strong> → 方案 B（每月 8 萬還款 + 2 萬投資）。6.75 年還清房貸，同時建立投資組合，心理壓力最小。</div>
+              <div><strong class="text-white">如果你能扛市場波動</strong> → 方案 C（5/5 平衡）。長期淨值會贏方案 A 約 100-300 萬，但要心理準備房貸還 11 年。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5">
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl flex-shrink-0">🎯</div>
+          <div>
+            <div class="font-bold text-white text-lg mb-2">為什麼不推薦 D（極端投資）</div>
+            <div class="text-sm text-white/70 leading-relaxed space-y-2">
+              <div>數學上最賺，但 <strong class="text-white">3 萬月還款太接近利息</strong>（前期月利息 $13,000），本金降得很慢，房貸要背 22 年。</div>
+              <div>而且這假設你 30 年都能 5%+ 穩定報酬不停損——<strong class="text-white">經歷過 2020 年 3 月（COVID 暴跌 30%）的人都知道</strong>，要在那種時候不賣出需要鋼鐵心臟。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5">
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-xl flex-shrink-0">🛡️</div>
+          <div>
+            <div class="font-bold text-white text-lg mb-2">執行前先做的事</div>
+            <div class="text-sm text-white/70 leading-relaxed space-y-1.5">
+              <div>1. <strong class="text-white">緊急預備金</strong>：6-12 個月生活費獨立放定存 / 高利活儲，不算進投資組合</div>
+              <div>2. <strong class="text-white">先確認自己的風險承受度</strong>：問自己「投資組合一夜跌 30%，我會睡不著嗎？」</div>
+              <div>3. <strong class="text-white">投資工具選低成本指數化</strong>：0050、006208、VTI、VOO 這類，避免主動選股</div>
+              <div>4. <strong class="text-white">定期定額不擇時</strong>：每月固定 1 號或發薪日就買，不要看市場</div>
+              <div>5. <strong class="text-white">每年再平衡一次</strong>：股債比例偏離超過 5% 就調整</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-2xl p-5" style="background: linear-gradient(135deg, rgba(251,191,36,0.05), rgba(251,113,133,0.05));">
+        <div class="flex items-start gap-3">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-amber-500 flex items-center justify-center text-xl flex-shrink-0">💎</div>
+          <div>
+            <div class="font-bold text-white text-lg mb-2">終極目標：被動收入 cover 房貸</div>
+            <div class="text-sm text-white/70 leading-relaxed space-y-2">
+              <div>累積到 <strong class="text-gradient-green">約 700 萬投資組合</strong>，年化 5% = 每年產生 35 萬被動收入。</div>
+              <div>不僅 cover 你的房貸（年付約 28.8 萬），還有餘裕。<strong class="text-white">這時候房貸對你來說不是負債，是低成本資金。</strong></div>
+              <div class="text-xs text-white/50 mt-2">📌 達成這個目標的時間：方案 A 約 14-16 年；方案 B 約 12-14 年；方案 C 約 10-12 年。</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="mt-6 pt-5 border-t border-white/10">
       <div class="text-[10px] text-white/40 leading-relaxed">
-        ⚠️ 本工具僅供試算參考，不構成投資建議。實際投資存在本金虧損風險，過去績效不代表未來表現。請諮詢專業財務顧問評估個人狀況。
+        ⚠️ 本工具僅供試算參考，不構成投資建議。投報率假設為長期平均，實際投資存在本金虧損風險，過去績效不代表未來表現。請根據個人狀況、風險承受度、人生階段做決策，必要時諮詢專業財務顧問。
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
   <div class="text-center mt-8 pb-4">
-    <p class="text-white/30 text-xs tracking-widest">CRAFTED FOR PAUL · 財務策略中心</p>
+    <p class="text-white/30 text-xs tracking-widest">CRAFTED FOR PAUL · 財務策略 v5</p>
   </div>
 </div>
 
 <script>
-let chart = null;
-let scheduleData = [];
-let displayMode = 'key';
+const P = 6000000;
+const mr1 = 0.026 / 12;
+const mr2 = 0.0275 / 12;
+const final_keep = 100000;
+const total_months = 360;
+const switch_month = 24;
+
+const scenarios = [
+  { id: 'A', name: 'A · 全力還款', repay: 100000, invest: 0, color: '#a78bfa', tagline: '10 萬還 / 0 萬投' },
+  { id: 'B', name: 'B · 8/2 平衡', repay: 80000, invest: 20000, color: '#22d3ee', tagline: '8 萬還 / 2 萬投', recommended: true },
+  { id: 'C', name: 'C · 5/5 平衡', repay: 50000, invest: 50000, color: '#4ade80', tagline: '5 萬還 / 5 萬投' },
+  { id: 'D', name: 'D · 3/7 投資', repay: 30000, invest: 70000, color: '#fbbf24', tagline: '3 萬還 / 7 萬投' }
+];
+
+let currentScenario = 'B';
+let currentInvestRate = 0.05;
+let comparisonChart = null;
 
 const fmt = n => '$' + Math.round(n).toLocaleString();
 const fmtShort = n => {
+  if (n >= 100000000) return '$' + (n/100000000).toFixed(2) + '億';
   if (n >= 1000000) return '$' + (n/1000000).toFixed(2) + 'M';
   if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
   return '$' + Math.round(n);
 };
-
 const fmtWan = n => {
   if (n >= 100000000) return (n/100000000).toFixed(2) + ' 億';
   if (n >= 10000) return Math.round(n/10000).toLocaleString() + ' 萬';
@@ -607,271 +486,187 @@ function updateRangeFill(input) {
   input.style.setProperty('--value', pct + '%');
 }
 
-function calculate() {
-  const principal = parseFloat(document.getElementById('principal').value) * 10000;
-  const annualRate = parseFloat(document.getElementById('rate').value) / 100;
-  const monthlyRate = annualRate / 12;
-  const years = parseInt(document.getElementById('years').value);
-  const totalMonths = years * 12;
-  const graceMonths = parseInt(document.getElementById('grace').value);
-  const extraPayment = parseFloat(document.getElementById('extra').value);
-  const finalKeep = parseFloat(document.getElementById('final').value);
-
-  document.getElementById('principal-out').textContent = (principal/10000).toFixed(0) + ' 萬';
-  document.getElementById('rate-out').textContent = (annualRate*100).toFixed(2) + '%';
-  document.getElementById('years-out').textContent = years + ' 年';
-  document.getElementById('grace-out').textContent = graceMonths;
-  document.getElementById('extra-out').textContent = (extraPayment/10000).toFixed(1).replace('.0','') + ' 萬';
-  document.getElementById('final-out').textContent = (finalKeep/10000).toFixed(1).replace('.0','') + ' 萬';
-
-  document.querySelectorAll('input[type="range"]').forEach(updateRangeFill);
-
-  const M = principal * (monthlyRate * Math.pow(1+monthlyRate, totalMonths)) / (Math.pow(1+monthlyRate, totalMonths) - 1);
-  const yearlyPayment = M * 12;
-
-  scheduleData = [];
-  let balance = principal;
-  let totalInterest = 0;
-  let payoffMonth = totalMonths;
-
-  for (let i = 1; i <= graceMonths && balance > 0; i++) {
-    const interest = balance * monthlyRate;
-    const principalPaid = M - interest;
-    balance -= principalPaid;
-    totalInterest += interest;
-    scheduleData.push({month: i, payment: M, interest, principal: principalPaid, balance, phase: 'grace'});
-  }
-
-  for (let i = graceMonths + 1; i <= totalMonths; i++) {
-    if (balance <= finalKeep + 0.01) {
-      const interest = balance * monthlyRate;
-      totalInterest += interest;
-      scheduleData.push({month: i, payment: interest, interest, principal: 0, balance, phase: 'final'});
+function simulate(monthly_repay, monthly_invest, invest_rate_annual) {
+  let balance = P;
+  let invest_value = 0;
+  let total_interest = 0;
+  let payoff_month = total_months;
+  const mr_invest = invest_rate_annual / 12;
+  
+  const trajectory = [];
+  
+  for (let i = 1; i <= total_months; i++) {
+    const rate = i <= switch_month ? mr1 : mr2;
+    
+    if (balance <= final_keep + 0.01) {
+      // 房貸還清留存階段
+      const interest = balance * rate;
+      total_interest += interest;
+      const actual_invest = 100000 - interest;  // 全部 10 萬可投資
+      invest_value = invest_value * (1 + mr_invest) + actual_invest;
+      trajectory.push({ month: i, balance, invest: invest_value });
       continue;
     }
-
-    const interest = balance * monthlyRate;
-    let payment = extraPayment;
-    let principalPaid = payment - interest;
-
-    if (balance - principalPaid < finalKeep) {
-      principalPaid = balance - finalKeep;
-      payment = principalPaid + interest;
-      balance = finalKeep;
-      if (payoffMonth === totalMonths) payoffMonth = i;
-    } else {
-      balance -= principalPaid;
+    
+    const interest = balance * rate;
+    let principal = monthly_repay - interest;
+    
+    if (principal < 0) {
+      // 還款不夠付利息
+      trajectory.push({ month: i, balance, invest: invest_value, error: true });
+      continue;
     }
-
-    totalInterest += interest;
-    scheduleData.push({month: i, payment, interest, principal: principalPaid, balance, phase: 'accelerated'});
+    
+    if (balance - principal < final_keep) {
+      principal = balance - final_keep;
+      balance = final_keep;
+      if (payoff_month === total_months) payoff_month = i;
+    } else {
+      balance -= principal;
+    }
+    
+    total_interest += interest;
+    invest_value = invest_value * (1 + mr_invest) + monthly_invest;
+    trajectory.push({ month: i, balance, invest: invest_value });
   }
+  
+  return {
+    payoff_month,
+    total_interest,
+    final_invest: invest_value,
+    net_position: invest_value - final_keep - total_interest,
+    trajectory
+  };
+}
 
-  const standardTotalInterest = M * totalMonths - principal;
-  const saved = standardTotalInterest - totalInterest;
+function renderScenarioButtons() {
+  const html = scenarios.map(s => `
+    <div class="scenario-btn ${s.id === currentScenario ? 'active' : ''} glass rounded-2xl p-3 cursor-pointer relative" data-id="${s.id}">
+      ${s.recommended ? '<div class="badge badge-best absolute -top-2 right-2">推薦</div>' : ''}
+      <div class="text-xs font-bold mb-1" style="color: ${s.color}">${s.name}</div>
+      <div class="text-[10px] text-white/50">${s.tagline}</div>
+    </div>
+  `).join('');
+  document.getElementById('scenario-buttons').innerHTML = html;
+  
+  document.querySelectorAll('.scenario-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentScenario = btn.dataset.id;
+      renderScenarioButtons();
+      updateAll();
+    });
+  });
+}
 
-  document.getElementById('stat-standard').textContent = fmt(M);
-  document.getElementById('stat-payoff').textContent = '第 ' + payoffMonth + ' 期';
-  document.getElementById('stat-payoff-sub').textContent = '約 ' + (payoffMonth/12).toFixed(1) + ' 年';
-  document.getElementById('stat-interest').textContent = fmtShort(totalInterest);
-  document.getElementById('stat-saved').textContent = fmtShort(saved);
-  document.getElementById('stat-saved-sub').textContent = saved > 1500000 ? '省一台車 🚗' : saved > 800000 ? '省一趟長途旅行 ✈️' : '小有節省 💰';
-  document.getElementById('yearly-payment').textContent = fmt(yearlyPayment);
-
-  updateInvestmentCards(yearlyPayment, M, principal, annualRate);
-  updateArbitrage(principal, annualRate);
-  updateFinalStrategy(M, yearlyPayment, principal, annualRate, payoffMonth, totalMonths, saved, graceMonths, finalKeep, extraPayment);
+function updateAll() {
+  const s = scenarios.find(x => x.id === currentScenario);
+  const result = simulate(s.repay, s.invest, currentInvestRate);
+  const resultA = simulate(100000, 0, currentInvestRate);  // 基準對照
+  
+  // 更新顯示
+  document.getElementById('current-scenario-label').textContent = 'SCENARIO ' + s.id;
+  document.getElementById('invest-final').textContent = fmtShort(result.final_invest);
+  document.getElementById('invest-final-wan').textContent = '約 ' + fmtWan(result.final_invest);
+  document.getElementById('payoff-time').textContent = '第 ' + result.payoff_month + ' 期';
+  document.getElementById('payoff-years').textContent = (result.payoff_month/12).toFixed(2) + ' 年';
+  document.getElementById('total-interest').textContent = fmtShort(result.total_interest);
+  document.getElementById('allocation').innerHTML = `<span class="text-gradient-rate1">${(s.repay/10000).toFixed(0)}萬還</span> · <span class="text-gradient-cyan">${(s.invest/10000).toFixed(0)}萬投</span>`;
+  
+  // vs 全力還款
+  const diff = result.final_invest - resultA.final_invest;
+  const vsAEl = document.getElementById('vs-a');
+  if (currentScenario === 'A') {
+    vsAEl.textContent = '基準';
+    vsAEl.className = 'text-lg font-bold hero-number text-white/60';
+    document.getElementById('vs-a-label').textContent = '基準方案';
+  } else {
+    vsAEl.textContent = (diff > 0 ? '+' : '') + fmtShort(Math.abs(diff));
+    vsAEl.className = diff > 0 ? 'text-lg font-bold hero-number text-gradient-green' : 'text-lg font-bold hero-number text-gradient-pink';
+    document.getElementById('vs-a-label').textContent = diff > 0 ? '比 A 多賺' : '比 A 少賺';
+  }
+  
+  updateInsights(result, resultA, s);
   updateChart();
-  updateTable();
 }
 
-function updateInvestmentCards(yearlyPayment, monthlyPayment, principal, mortgageRate) {
-  const scenarios = [
-    { rate: 4, label: '保守組合', desc: '高股息 ETF / 投資級債券', color: 'amber', risk: '低風險' },
-    { rate: 5, label: '穩健組合', desc: '0050 / 高股息 ETF 組合', color: 'green', risk: '中低風險', recommended: true },
-    { rate: 6, label: '平衡組合', desc: '台股 ETF + 美股大盤', color: 'cyan', risk: '中風險' },
-    { rate: 8, label: '積極組合', desc: 'S&P 500 / VOO / VTI', color: 'purple', risk: '中高風險' }
-  ];
-
-  const html = scenarios.map(s => {
-    const required = yearlyPayment / (s.rate / 100);
-    const requiredWan = required / 10000;
-    const monthlyDividend = required * (s.rate / 100) / 12;
-    const arbitrage = (s.rate - mortgageRate * 100) / 100 * principal;
-
-    return `
-      <div class="invest-card glass card-hover rounded-2xl p-4 ${s.recommended ? 'recommended' : ''}">
-        <div class="flex items-start justify-between mb-3">
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="text-base font-bold text-white">${s.label}</span>
-              <span class="badge badge-${s.color === 'green' ? 'final' : s.color === 'amber' ? 'grace' : 'accelerated'}">${s.risk}</span>
-            </div>
-            <div class="text-xs text-white/50">${s.desc}</div>
-          </div>
-          <div class="text-right">
-            <div class="text-2xl font-black text-gradient-${s.color}">${s.rate}%</div>
-            <div class="text-[10px] text-white/40">年化報酬</div>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-white/5">
-          <div>
-            <div class="text-[10px] text-white/50 font-semibold tracking-wider uppercase mb-1">需要本金</div>
-            <div class="text-lg font-bold text-white hero-number">${fmtWan(required)}</div>
-          </div>
-          <div>
-            <div class="text-[10px] text-white/50 font-semibold tracking-wider uppercase mb-1">月配息</div>
-            <div class="text-lg font-bold text-white hero-number">${fmt(monthlyDividend)}</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  document.getElementById('investment-cards').innerHTML = html;
-}
-
-function updateArbitrage(principal, mortgageRate) {
-  const rates = [3, 4, 5, 6, 7, 8];
-  const html = rates.map(r => {
-    const spread = r - mortgageRate * 100;
-    const annualGain = principal * (spread / 100);
-    const positive = spread > 0;
-    return `
-      <div class="flex items-center justify-between py-2 px-3 rounded-lg ${positive ? 'bg-green-500/5' : 'bg-red-500/5'} hover:bg-white/5 transition-colors">
-        <div class="flex items-center gap-3">
-          <span class="font-mono text-xs text-white/60">${r}%</span>
-          <span class="text-white/30">−</span>
-          <span class="font-mono text-xs text-white/60">${(mortgageRate*100).toFixed(2)}%</span>
-          <span class="text-white/30">=</span>
-          <span class="font-mono text-sm font-bold ${positive ? 'text-green-400' : 'text-red-400'}">${spread > 0 ? '+' : ''}${spread.toFixed(2)}%</span>
-        </div>
-        <div class="text-sm font-bold ${positive ? 'text-gradient-green' : 'text-red-400'} hero-number">
-          ${positive ? '+' : ''}${fmt(annualGain)}/年
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  document.getElementById('arbitrage-list').innerHTML = html;
-}
-
-function updateFinalStrategy(M, yearlyPayment, principal, mortgageRate, payoffMonth, totalMonths, saved, graceMonths, finalKeep, extraPayment) {
-  const yearsToPayoff = (payoffMonth / 12).toFixed(1);
-  const yearsSaved = ((totalMonths - payoffMonth) / 12).toFixed(1);
-
-  const required5pct = yearlyPayment / 0.05;
-  const required5pctWan = (required5pct / 10000).toFixed(0);
-
-  const arbitrage5 = principal * 0.024;
-
-  const html = `
-    <div class="glass rounded-2xl p-5">
+function updateInsights(result, resultA, s) {
+  const diff = result.final_invest - resultA.final_invest;
+  const yearsToPayoff = (result.payoff_month / 12).toFixed(1);
+  
+  let insights = [];
+  
+  if (s.id === 'A') {
+    insights.push({
+      icon: '⚡', color: 'purple',
+      title: `房貸 ${yearsToPayoff} 年快速結清`,
+      desc: `最快還清房貸的方案。第 65 期起每月有完整 10 萬可投資，但前 5.3 年完全沒參與市場成長。`
+    });
+    insights.push({
+      icon: '📊', color: 'cyan',
+      title: `30 年後投資組合 ${fmtShort(result.final_invest)}`,
+      desc: `等於把 ${(295 * 100000 / 10000).toFixed(0)} 萬本金（295個月）放到市場滾出來。複利效應從第 65 期才開始。`
+    });
+  } else {
+    const monthsInMarket = total_months;
+    insights.push({
+      icon: '🎯', color: 'green',
+      title: `比方案 A 多賺 ${fmtShort(Math.abs(diff))}`,
+      desc: `差距來自「越早投入市場 → 越多年複利時間」。${(s.invest/10000).toFixed(0)} 萬從第 1 期開始投，不是從第 65 期。`
+    });
+    insights.push({
+      icon: '🏠', color: 'amber',
+      title: `房貸 ${yearsToPayoff} 年還清`,
+      desc: `比方案 A 多背 ${(yearsToPayoff - 5.3).toFixed(1)} 年房貸，但這段時間你的 ${(s.invest/10000).toFixed(0)} 萬持續在市場累積。`
+    });
+  }
+  
+  // 套利空間說明
+  const spread = (currentInvestRate * 100 - 2.75).toFixed(2);
+  insights.push({
+    icon: '💎', color: 'pink',
+    title: `套利空間 ${spread}%`,
+    desc: `投報率 ${(currentInvestRate*100).toFixed(1)}% − 房貸 2.75% = ${spread}%。只要投資長期回報 > 2.75%，「邊投資邊還款」數學上就划算。但風險是你能不能長期持有不停損。`
+  });
+  
+  const html = insights.map(i => `
+    <div class="glass rounded-xl p-4">
       <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-lg flex-shrink-0">🏠</div>
+        <div class="text-xl flex-shrink-0">${i.icon}</div>
         <div>
-          <div class="font-bold text-white mb-1">階段一：寬限期 (前 ${graceMonths} 個月)</div>
-          <div class="text-sm text-white/70 leading-relaxed">
-            每月只繳 <span class="font-bold text-gradient-purple">${fmt(M)}</span>，剩餘現金流全部投入
-            <span class="font-bold text-gradient-cyan">高股息 ETF 或投資組合</span>。
-            這 ${graceMonths} 個月會累積一筆「投資戰備金」，用來支撐後面的加速還款 + 持續投資。
-          </div>
+          <div class="font-bold text-white text-sm mb-1">${i.title}</div>
+          <div class="text-xs text-white/60 leading-relaxed">${i.desc}</div>
         </div>
       </div>
     </div>
-
-    <div class="glass rounded-2xl p-5">
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-lg flex-shrink-0">⚡</div>
-        <div>
-          <div class="font-bold text-white mb-1">階段二：加速還款 (第 ${graceMonths+1} 期 - 第 ${payoffMonth} 期)</div>
-          <div class="text-sm text-white/70 leading-relaxed">
-            每月還 <span class="font-bold text-gradient-cyan">${(extraPayment/10000).toFixed(0)} 萬</span>，
-            <span class="font-bold text-gradient-amber">${yearsToPayoff} 年</span>內把本金壓到 ${(finalKeep/10000).toFixed(0)} 萬。
-            節省 <span class="font-bold text-gradient-green">${fmtShort(saved)}</span> 利息，比 30 年慢慢還早 ${yearsSaved} 年解放現金流。
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="glass rounded-2xl p-5">
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-lg flex-shrink-0">🎯</div>
-        <div>
-          <div class="font-bold text-white mb-1">終極目標：財務自由 (年化 5%)</div>
-          <div class="text-sm text-white/70 leading-relaxed">
-            累積到 <span class="font-bold text-gradient-green">${required5pctWan} 萬</span> 投資組合，
-            年化 5% = 每年產生 <span class="font-bold text-gradient-green">${fmt(yearlyPayment)}</span>
-            <span class="text-white/50">（剛好 cover 房貸）</span>。
-            房貸 2.6% × 投資 5% = <span class="font-bold text-gradient-amber">2.4% 套利空間</span>，
-            600 萬本金每年淨賺 <span class="font-bold text-gradient-amber">${fmt(arbitrage5)}</span>。
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="glass rounded-2xl p-5 border border-amber-500/20" style="background: linear-gradient(135deg, rgba(251,191,36,0.05), rgba(251,113,133,0.05));">
-      <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-lg flex-shrink-0">💡</div>
-        <div>
-          <div class="font-bold text-white mb-1">關鍵洞察</div>
-          <div class="text-sm text-white/70 leading-relaxed space-y-2">
-            <div>• 你的房貸利率 <span class="font-bold text-gradient-amber">${(mortgageRate*100).toFixed(2)}%</span> 是非常低成本的資金。</div>
-            <div>• 只要長期投報率 > 2.6%，<span class="font-bold text-white">「邊還貸款邊投資」優於「全力還清貸款」</span>。</div>
-            <div>• 最後留 ${(finalKeep/10000).toFixed(0)} 萬到第 ${totalMonths} 期：每年僅需付 <span class="font-bold">${fmt(finalKeep * mortgageRate)}</span> 利息維持貸款帳戶，是極便宜的「信用維護費」。</div>
-            <div>• 寬限期 (前 ${graceMonths} 個月) 是黃金時期：本金不還、現金流最寬鬆，適合大量布局投資組合。</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('final-strategy').innerHTML = html;
+  `).join('');
+  
+  document.getElementById('insights').innerHTML = html;
 }
 
 function updateChart() {
-  const ctx = document.getElementById('balanceChart');
-  if (chart) chart.destroy();
-
-  const labels = scheduleData.map(r => r.month);
-  const balances = scheduleData.map(r => r.balance);
-
-  // 漸層填充
-  const ctx2d = ctx.getContext('2d');
-  const gradient = ctx2d.createLinearGradient(0, 0, 0, 260);
-  gradient.addColorStop(0, 'rgba(167, 139, 250, 0.4)');
-  gradient.addColorStop(0.5, 'rgba(167, 139, 250, 0.1)');
-  gradient.addColorStop(1, 'rgba(167, 139, 250, 0)');
-
-  // segment colors based on phase
-  const segmentColors = scheduleData.map(r => {
-    if (r.phase === 'grace') return '#fbbf24';
-    if (r.phase === 'final') return '#4ade80';
-    return '#a78bfa';
+  const ctx = document.getElementById('comparisonChart');
+  if (comparisonChart) comparisonChart.destroy();
+  
+  const datasets = scenarios.map(s => {
+    const result = simulate(s.repay, s.invest, currentInvestRate);
+    const data = result.trajectory.map(t => ({ x: t.month, y: t.invest }));
+    return {
+      label: s.name,
+      data: data,
+      borderColor: s.color,
+      backgroundColor: s.color + '15',
+      fill: false,
+      tension: 0.2,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      borderWidth: s.id === currentScenario ? 4 : 2,
+      borderDash: s.id === currentScenario ? [] : [],
+    };
   });
-
-  chart = new Chart(ctx, {
+  
+  comparisonChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: '剩餘本金',
-        data: balances,
-        borderColor: '#a78bfa',
-        backgroundColor: gradient,
-        fill: true,
-        tension: 0.35,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: '#a78bfa',
-        pointHoverBorderWidth: 3,
-        borderWidth: 3,
-        segment: {
-          borderColor: ctx => segmentColors[ctx.p1DataIndex] || '#a78bfa'
-        }
-      }]
-    },
+    data: { datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -885,21 +680,23 @@ function updateChart() {
           borderColor: 'rgba(167, 139, 250, 0.4)',
           borderWidth: 1,
           titleFont: { size: 12, weight: '500', family: 'Inter' },
-          bodyFont: { size: 14, weight: '700', family: 'JetBrains Mono' },
+          bodyFont: { size: 13, weight: '600', family: 'JetBrains Mono' },
           titleColor: 'rgba(255,255,255,0.6)',
           bodyColor: '#fff',
           callbacks: {
-            title: (items) => '第 ' + items[0].label + ' 期',
-            label: (item) => '剩餘本金: ' + fmt(item.parsed.y)
+            title: (items) => '第 ' + items[0].parsed.x + ' 期 · ' + (items[0].parsed.x/12).toFixed(1) + ' 年',
+            label: (item) => item.dataset.label + ': ' + fmtShort(item.parsed.y)
           }
         }
       },
       scales: {
         x: {
+          type: 'linear',
           ticks: {
-            maxTicksLimit: 6,
+            maxTicksLimit: 7,
             color: 'rgba(255,255,255,0.4)',
-            font: { size: 11, family: 'JetBrains Mono' }
+            font: { size: 10, family: 'JetBrains Mono' },
+            callback: v => Math.round(v/12) + 'y'
           },
           grid: { display: false },
           border: { color: 'rgba(255,255,255,0.05)' }
@@ -907,8 +704,11 @@ function updateChart() {
         y: {
           ticks: {
             color: 'rgba(255,255,255,0.4)',
-            font: { size: 11, family: 'JetBrains Mono' },
-            callback: v => '$' + (v/1000000).toFixed(1) + 'M'
+            font: { size: 10, family: 'JetBrains Mono' },
+            callback: v => {
+              if (v >= 100000000) return (v/100000000).toFixed(1) + '億';
+              return (v/1000000).toFixed(0) + 'M';
+            }
           },
           grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
           border: { display: false }
@@ -918,65 +718,16 @@ function updateChart() {
   });
 }
 
-function updateTable() {
-  const tbody = document.getElementById('schedule-body');
-  let rows = scheduleData;
-
-  if (displayMode === 'key') {
-    const graceEnd = parseInt(document.getElementById('grace').value);
-    const keyMonths = new Set([1, 12, 24, graceEnd, graceEnd+1, graceEnd+12, graceEnd+24]);
-
-    let payoffIdx = -1;
-    for (let i = 0; i < scheduleData.length; i++) {
-      if (scheduleData[i].phase === 'final') { payoffIdx = i; break; }
-    }
-    if (payoffIdx > 0) {
-      keyMonths.add(scheduleData[payoffIdx-1].month);
-      keyMonths.add(scheduleData[payoffIdx].month);
-    }
-    keyMonths.add(scheduleData[scheduleData.length-1].month);
-
-    rows = scheduleData.filter(r => keyMonths.has(r.month));
-  } else if (displayMode === 'yearly') {
-    rows = scheduleData.filter(r => r.month % 12 === 0 || r.month === 1 || r.month === scheduleData.length);
-  }
-
-  tbody.innerHTML = rows.map(r => {
-    const phaseClass = r.phase === 'grace' ? 'badge-grace' : r.phase === 'final' ? 'badge-final' : 'badge-accelerated';
-    const phaseLabel = r.phase === 'grace' ? '寬限' : r.phase === 'final' ? '留存' : '加速';
-    return `<tr class="hover:bg-white/5 transition-colors">
-      <td class="px-3 py-3">
-        <div class="flex items-center gap-2">
-          <span class="badge ${phaseClass}">${phaseLabel}</span>
-          <span class="font-mono text-sm font-semibold text-white/90">${r.month}</span>
-        </div>
-      </td>
-      <td class="px-3 py-3 text-right font-mono text-sm font-bold text-white">${fmt(r.payment)}</td>
-      <td class="px-3 py-3 text-right font-mono text-xs text-white/50">${fmt(r.interest)}</td>
-      <td class="px-3 py-3 text-right font-mono text-xs text-white/70">${fmt(r.principal)}</td>
-      <td class="px-3 py-3 text-right font-mono text-sm font-bold text-gradient-purple">${fmt(r.balance)}</td>
-    </tr>`;
-  }).join('');
-}
-
-['principal','rate','years','grace','extra','final'].forEach(id => {
-  const el = document.getElementById(id);
-  el.addEventListener('input', calculate);
-  updateRangeFill(el);
+document.getElementById('invest-rate').addEventListener('input', (e) => {
+  currentInvestRate = parseFloat(e.target.value) / 100;
+  document.getElementById('invest-rate-out').textContent = (currentInvestRate*100).toFixed(1) + '%';
+  updateRangeFill(e.target);
+  updateAll();
 });
 
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    e.target.classList.add('active');
-    if (e.target.id === 'btn-key') displayMode = 'key';
-    else if (e.target.id === 'btn-yearly') displayMode = 'yearly';
-    else displayMode = 'all';
-    updateTable();
-  });
-});
-
-calculate();
+updateRangeFill(document.getElementById('invest-rate'));
+renderScenarioButtons();
+updateAll();
 </script>
 
 </body>
