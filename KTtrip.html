@@ -15,49 +15,53 @@
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
   :root {
-    /* Sunset & sand background */
-    --bg: #FFF1DC;
-    --bg-soft: #FFE2BF;
-    --bg-warm: #FFDCC4;
-    --paper: #FFFCF5;
+    /* Sand & sea backdrop */
+    --bg: #EFEDDC;
+    --bg-soft: #E5E2CD;
+    --paper: #FAF9F2;
 
-    /* Deep ocean ink */
-    --ink: #16263A;
-    --ink-soft: #3E5566;
-    --ink-mute: #8FA0AC;
+    /* Deep navy ink */
+    --ink: #0C2336;
+    --ink-soft: #2A4356;
+    --ink-mute: #7E8C95;
 
-    /* Soft lines */
-    --line: #F2D5A8;
-    --line-soft: #FAEACA;
+    /* Sage lines */
+    --line: #C9D2C2;
+    --line-soft: #E0E6D8;
 
-    /* TROPICAL PALETTE */
-    --ocean: #0EA5BC;
-    --ocean-deep: #0A7A8B;
-    --ocean-soft: #6FCFDD;
+    /* OCEAN spectrum (primary) */
+    --ocean: #0891B2;
+    --ocean-deep: #0E5C73;
+    --ocean-soft: #67E8F9;
 
-    --coral: #FF5A36;
-    --coral-soft: #FF8C6E;
-    --coral-glow: #FFC2A8;
+    --teal: #0D9488;
+    --teal-deep: #115E59;
+    --teal-soft: #5EEAD4;
 
-    --sun: #FFB42A;
-    --sun-soft: #FFD06B;
-    --sun-deep: #B07B0A;
+    --jade: #06B6D4;
+    --jade-soft: #A5F3FC;
 
-    --pink: #FF4A8B;
-    --pink-soft: #FF85AE;
+    /* PALM spectrum (primary) */
+    --palm: #059669;
+    --palm-deep: #047857;
+    --palm-soft: #6EE7B7;
 
-    --palm: #1F8F53;
-    --palm-soft: #5DB880;
+    --leaf: #65A30D;
+    --moss: #4D7C0F;
 
-    --sand: #E8B870;
-    --shell: #FFE5D0;
+    /* Sparing warm accents (used in moderation) */
+    --coral: #F97316;
+    --sun: #FBBF24;
+    --sun-deep: #B45309;
+    --pink: #EC4899;
+    --sand: #D4A574;
   }
   *,*::before,*::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
     font-family: "Noto Sans TC", system-ui, sans-serif;
-    background: linear-gradient(180deg, #FFF1DC 0%, #FFE2BF 50%, #FFDCC4 100%);
+    background: linear-gradient(180deg, #EFEDDC 0%, #E5EAD8 60%, #DCE8DA 100%);
     background-attachment: fixed;
     color: var(--ink);
     font-size: 15px;
@@ -72,10 +76,10 @@
     content: "";
     position: fixed; inset: 0;
     background-image:
-      radial-gradient(circle at 12% 8%, rgba(14,165,188,0.12), transparent 35%),
-      radial-gradient(circle at 92% 12%, rgba(255,180,42,0.18), transparent 38%),
-      radial-gradient(circle at 88% 88%, rgba(255,74,139,0.10), transparent 40%),
-      radial-gradient(circle at 8% 92%, rgba(31,143,83,0.08), transparent 38%);
+      radial-gradient(circle at 8% 6%, rgba(8,145,178,0.16), transparent 40%),
+      radial-gradient(circle at 92% 14%, rgba(5,150,105,0.12), transparent 38%),
+      radial-gradient(circle at 88% 88%, rgba(13,148,136,0.14), transparent 42%),
+      radial-gradient(circle at 12% 92%, rgba(101,163,13,0.10), transparent 38%);
     pointer-events: none;
     z-index: 0;
   }
@@ -94,13 +98,13 @@
   .hero::after {
     content: "";
     position: absolute;
-    top: 8px; right: -20px;
-    width: 130px; height: 130px;
-    background: radial-gradient(circle at center, var(--sun) 0%, var(--coral-soft) 35%, transparent 65%);
+    top: 14px; right: -10px;
+    width: 110px; height: 110px;
+    background: radial-gradient(circle at center, var(--sun) 0%, rgba(251,191,36,0.4) 35%, transparent 65%);
     border-radius: 50%;
     opacity: 0.45;
     z-index: -1;
-    filter: blur(2px);
+    filter: blur(3px);
   }
   .hero-eyebrow {
     font-family: "JetBrains Mono", monospace;
@@ -125,7 +129,7 @@
     line-height: 1.0;
     margin: 0 0 8px;
     letter-spacing: -0.025em;
-    background: linear-gradient(115deg, var(--coral) 0%, var(--sun) 45%, var(--pink) 100%);
+    background: linear-gradient(115deg, var(--ocean-deep) 0%, var(--teal) 50%, var(--palm) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -249,8 +253,77 @@
     font-size: 17px;
     margin-bottom: 8px;
   }
+
+  /* RENTAL CARD */
+  .info-card-rental::before {
+    background: linear-gradient(180deg, var(--palm) 0%, var(--ocean) 100%) !important;
+  }
+  .rental-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 480px) { .rental-grid { grid-template-columns: 1fr; gap: 10px; } }
+  .rental-block {
+    background: rgba(5,150,105,0.06);
+    border-radius: 4px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--palm);
+  }
+  .rental-grid .rental-block:nth-child(2) {
+    background: rgba(249,115,22,0.06);
+    border-left-color: var(--coral);
+  }
+  .rental-block-label {
+    font: 600 10px "JetBrains Mono", monospace;
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
+  }
+  .rental-block-main {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .rental-block-time {
+    font: 500 13px "JetBrains Mono", monospace;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  .rental-extras {
+    grid-column: 1 / -1;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    margin-top: 2px;
+  }
   .hsr-detail { display: flex; gap: 8px; align-items: baseline; font-size: 12px; color: var(--ink-soft); margin-bottom: 4px; }
   .hsr-detail-label { font: 500 10px "JetBrains Mono", monospace; letter-spacing: 0.05em; color: var(--ink-mute); min-width: 50px; }
+  .hsr-booked {
+    background: rgba(8,145,178,0.06);
+    border-radius: 4px;
+    padding: 8px 11px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--ocean);
+  }
+  .hsr-booked-row {
+    display: flex; align-items: baseline; gap: 10px;
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+  .hsr-booked-row:last-child { margin-bottom: 0; }
+  .hsr-booked-row span:first-child {
+    color: var(--ocean-deep);
+    font: 600 10px "JetBrains Mono", monospace;
+    letter-spacing: 0.12em;
+    min-width: 32px;
+  }
+  .hsr-booked-row strong {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    color: var(--ink);
+  }
 
   /* DAY SECTION */
   .day {
@@ -311,14 +384,15 @@
   .item {
     background: var(--paper);
     border: 1px solid var(--line);
+    border-left: 4px solid var(--day-accent, var(--ocean));
     border-radius: 4px;
     margin-bottom: 14px;
     position: relative;
     transition: all 0.2s;
     overflow: hidden;
-    box-shadow: 2px 2px 0 rgba(232,184,112,0.3);
+    box-shadow: 2px 2px 0 rgba(13,148,136,0.10);
   }
-  .item:hover { box-shadow: 4px 4px 0 rgba(232,184,112,0.45); transform: translate(-1px, -1px); }
+  .item:hover { box-shadow: 4px 4px 0 rgba(13,148,136,0.18); transform: translate(-1px, -1px); }
   .item.done { opacity: 0.55; box-shadow: 1px 1px 0 var(--line-soft); transform: none; }
   .item.done:hover { transform: none; }
   .item.done .item-name { text-decoration: line-through; text-decoration-color: var(--ink-mute); }
@@ -335,7 +409,7 @@
   }
   .item-time {
     font: 600 16px "JetBrains Mono", monospace;
-    color: var(--ink);
+    color: var(--day-accent, var(--ink));
     letter-spacing: -0.02em;
   }
   .item-duration {
@@ -381,11 +455,11 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
-  .cat-景點 { background: rgba(14,165,188,0.16); color: var(--ocean-deep); }
-  .cat-餐廳 { background: rgba(255,90,54,0.16); color: var(--coral); }
-  .cat-交通 { background: rgba(31,143,83,0.14); color: var(--palm); }
-  .cat-住宿 { background: rgba(255,180,42,0.22); color: var(--sun-deep); }
-  .cat-活動 { background: rgba(255,74,139,0.14); color: var(--pink); }
+  .cat-景點 { background: rgba(8,145,178,0.16); color: var(--ocean-deep); }
+  .cat-餐廳 { background: rgba(249,115,22,0.15); color: var(--coral); }
+  .cat-交通 { background: rgba(5,150,105,0.14); color: var(--palm-deep); }
+  .cat-住宿 { background: rgba(212,165,116,0.25); color: var(--sun-deep); }
+  .cat-活動 { background: rgba(13,148,136,0.16); color: var(--teal-deep); }
   .item-notes {
     font-size: 13px;
     color: var(--ink-soft);
@@ -469,7 +543,8 @@
     gap: 4px;
     margin-top: 12px;
     padding-top: 10px;
-    border-top: 1px dashed var(--line-soft);
+    border-top: 1px dashed var(--line);
+    opacity: 0.95;
   }
 
   /* PHOTO MODAL NAV */
@@ -801,6 +876,9 @@ const DEFAULT_DATA = {
       duration: "47-64 分鐘",
       price: "對號座 NT$790 / 自由座 NT$765",
       note: "早鳥 9 折 710 / 8 折 630 / 65 折 510",
+      trainNo: "",
+      actualTime: "",
+      seat: "",
     },
     inbound: {
       route: "左營 → 台中",
@@ -808,7 +886,19 @@ const DEFAULT_DATA = {
       duration: "47-64 分鐘",
       price: "對號座 NT$790 / 自由座 NT$765",
       note: "回程班次多，現場買也 OK",
+      trainNo: "",
+      actualTime: "",
+      seat: "",
     },
+  },
+  rental: {
+    company: "",
+    pickupLocation: "左營高鐵站",
+    pickupTime: "週五 ~20:00",
+    returnLocation: "左營高鐵站",
+    returnTime: "週日 ~17:30",
+    bookingRef: "",
+    note: "建議事先預約，現場有櫃台直接取車。",
   },
   days: [
     {
@@ -821,7 +911,8 @@ const DEFAULT_DATA = {
         { id: uid(), time: "19:00", duration: 60, category: "交通", name: "搭高鐵南下", notes: "對號座 NT$790，直達車約 47 分。\n用 T-EX App 訂位最方便。" },
         { id: uid(), time: "20:00", duration: 30, category: "交通", name: "左營高鐵站取車", address: "高雄市左營區高鐵路105號", lat: 22.6873, lng: 120.3074, notes: "建議事先預約格上或和運直接在高鐵站取車。" },
         { id: uid(), time: "20:30", duration: 120, category: "交通", name: "開車到墾丁", notes: "國 3 → 國 88 快 → 台 26，約 95 km，1.5-2 小時。\n墾丁加油站在恆春鎮上，越南越少。" },
-        { id: uid(), time: "22:30", duration: 0, category: "住宿", name: "抵達住宿 / 墾丁大街宵夜", lat: 21.9456, lng: 120.7964, notes: "墾丁大街夜市營業到 22:30，趕得上可以吃個山豬肉香腸+涼飲。" },
+        { id: uid(), time: "22:30", duration: 30, category: "活動", name: "墾丁大街宵夜（順便）", lat: 21.9456, lng: 120.7964, notes: "夜市營業到 22:30 前後，趕得上吃個山豬肉香腸+涼飲。" },
+        { id: uid(), time: "23:00", duration: 0, category: "住宿", name: "海都旅店", address: "屏東縣恆春鎮墾丁里大灣路118號", lat: 21.9437, lng: 120.7986, notes: "墾丁大灣路面海，步行 30 秒到墾丁大街。\n電話：09-7533-0569\n房號 / 訂房編號 / check-out 時間都可以記在這裡。" },
       ],
     },
     {
@@ -868,6 +959,22 @@ function buildPhotoMap() {
   return map;
 }
 
+// Fill missing top-level fields with defaults so older saves keep working
+function ensureSchema(data) {
+  if (!data) return data;
+  if (!data.rental) data.rental = JSON.parse(JSON.stringify(DEFAULT_DATA.rental));
+  if (data.hsr) {
+    ['outbound', 'inbound'].forEach(k => {
+      if (data.hsr[k]) {
+        if (data.hsr[k].trainNo === undefined) data.hsr[k].trainNo = "";
+        if (data.hsr[k].actualTime === undefined) data.hsr[k].actualTime = "";
+        if (data.hsr[k].seat === undefined) data.hsr[k].seat = "";
+      }
+    });
+  }
+  return data;
+}
+
 // Migrate from older storage keys, preserving user edits but enriching with photos
 function migrateFromOldKey() {
   const photoMap = buildPhotoMap();
@@ -885,9 +992,9 @@ function migrateFromOldKey() {
           }
         });
       });
-      // Save under new key, leave old key alone for safety
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-      return parsed;
+      const completed = ensureSchema(parsed);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+      return completed;
     } catch (e) { console.warn("migrate failed", oldKey, e); }
   }
   return null;
@@ -898,7 +1005,7 @@ function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.days) return parsed;
+      if (parsed && parsed.days) return ensureSchema(parsed);
     }
     const migrated = migrateFromOldKey();
     if (migrated) return migrated;
@@ -1098,7 +1205,7 @@ function ItemCard({ item, isEditing, onEdit, onCancelEdit, onSave, onDelete, onT
   const [photoFailed, setPhotoFailed] = useState(false);
   useEffect(() => { setPhotoFailed(false); }, [item.photos]);
   const hasPhotos = item.photos && item.photos.length > 0 && !photoFailed;
-  const showPhotoColumn = hasPhotos || cat === '景點';
+  const showPhotoColumn = hasPhotos || ['景點', '餐廳', '住宿'].includes(cat);
 
   return (
     <div className={`item ${item.done ? 'done' : ''}`}>
@@ -1175,6 +1282,13 @@ function HSRCard({ hsr, onUpdate }) {
     <div className={`hsr-leg ${isReturn ? 'return' : ''}`}>
       <div className="hsr-leg-label">{isReturn ? 'INBOUND · 回程' : 'OUTBOUND · 去程'}</div>
       <div className="hsr-route">{leg.route}</div>
+      {(leg.trainNo || leg.actualTime || leg.seat) && (
+        <div className="hsr-booked">
+          {leg.trainNo && <div className="hsr-booked-row"><span>車次</span><strong>{leg.trainNo}</strong></div>}
+          {leg.actualTime && <div className="hsr-booked-row"><span>時間</span><strong>{leg.actualTime}</strong></div>}
+          {leg.seat && <div className="hsr-booked-row"><span>座位</span><strong>{leg.seat}</strong></div>}
+        </div>
+      )}
       <div className="hsr-detail"><span className="hsr-detail-label">建議</span> {leg.suggestedTime}</div>
       <div className="hsr-detail"><span className="hsr-detail-label">車程</span> {leg.duration}</div>
       <div className="hsr-detail"><span className="hsr-detail-label">票價</span> {leg.price}</div>
@@ -1213,7 +1327,15 @@ function HSRCard({ hsr, onUpdate }) {
                 <div><label className="form-label">車程</label><input className="form-input" value={draft[key].duration} onChange={e => setDraft(d => ({...d, [key]: {...d[key], duration: e.target.value}}))} /></div>
                 <div><label className="form-label">票價</label><input className="form-input" value={draft[key].price} onChange={e => setDraft(d => ({...d, [key]: {...d[key], price: e.target.value}}))} /></div>
               </div>
-              <div className="form-row" style={{marginTop: 8}}>
+              <div style={{background:'var(--bg)', padding:'10px 12px', borderRadius:4, marginTop:10, borderLeft:'3px solid var(--ocean)'}}>
+                <div className="form-label" style={{color:'var(--ocean-deep)'}}>訂位資訊（訂完票自己填）</div>
+                <div className="form-row-flex" style={{marginTop:6}}>
+                  <div><label className="form-label">車次</label><input className="form-input" placeholder="1232" value={draft[key].trainNo || ''} onChange={e => setDraft(d => ({...d, [key]: {...d[key], trainNo: e.target.value}}))} /></div>
+                  <div><label className="form-label">時間</label><input className="form-input" placeholder="19:36" value={draft[key].actualTime || ''} onChange={e => setDraft(d => ({...d, [key]: {...d[key], actualTime: e.target.value}}))} /></div>
+                  <div><label className="form-label">座位</label><input className="form-input" placeholder="12車6A" value={draft[key].seat || ''} onChange={e => setDraft(d => ({...d, [key]: {...d[key], seat: e.target.value}}))} /></div>
+                </div>
+              </div>
+              <div className="form-row" style={{marginTop: 10}}>
                 <label className="form-label">備註</label>
                 <input className="form-input" value={draft[key].note} onChange={e => setDraft(d => ({...d, [key]: {...d[key], note: e.target.value}}))} />
               </div>
@@ -1229,9 +1351,96 @@ function HSRCard({ hsr, onUpdate }) {
   );
 }
 
+// ====================== RENTAL CARD ======================
+function RentalCard({ rental, onUpdate }) {
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(rental || {});
+  useEffect(() => { setDraft(rental || {}); }, [rental]);
+
+  const save = () => { onUpdate(draft); setEditing(false); };
+  const update = (k, v) => setDraft(d => ({...d, [k]: v}));
+  const hasInfo = rental && (rental.company || rental.bookingRef);
+
+  return (
+    <div className="info-card info-card-rental">
+      <div className="info-card-header" onClick={() => setOpen(!open)}>
+        <h3 className="info-card-title">
+          <span className="info-card-title-num" style={{background:'var(--palm-deep)'}}>CAR</span>
+          租車資訊
+          {hasInfo && rental.company && <span style={{fontSize:13, color:'var(--ink-mute)', fontWeight:500, fontFamily:'JetBrains Mono, monospace'}}> · {rental.company}</span>}
+        </h3>
+        <div style={{display:'flex', gap:6, alignItems:'center'}}>
+          {open && !editing && <button className="btn btn-ghost btn-sm" onClick={(e) => {e.stopPropagation(); setEditing(true);}}><Icon.Edit/> 編輯</button>}
+          <Icon.Chevron open={open} />
+        </div>
+      </div>
+      {open && !editing && (
+        <div className="rental-grid">
+          <div className="rental-block">
+            <div className="rental-block-label" style={{color:'var(--palm-deep)'}}>取車 · PICKUP</div>
+            <div className="rental-block-main">{rental.pickupLocation || '—'}</div>
+            <div className="rental-block-time">{rental.pickupTime || '—'}</div>
+          </div>
+          <div className="rental-block">
+            <div className="rental-block-label" style={{color:'var(--coral)'}}>還車 · RETURN</div>
+            <div className="rental-block-main">{rental.returnLocation || '—'}</div>
+            <div className="rental-block-time">{rental.returnTime || '—'}</div>
+          </div>
+          <div className="rental-extras">
+            {rental.company && <div className="hsr-detail"><span className="hsr-detail-label">公司</span> <strong style={{color:'var(--ink)'}}>{rental.company}</strong></div>}
+            {rental.bookingRef && <div className="hsr-detail"><span className="hsr-detail-label">訂單編號</span> <strong style={{color:'var(--ink)', fontFamily:'JetBrains Mono, monospace'}}>{rental.bookingRef}</strong></div>}
+            {rental.note && <div className="hsr-detail"><span className="hsr-detail-label">備註</span> <span style={{opacity:0.9}}>{rental.note}</span></div>}
+          </div>
+        </div>
+      )}
+      {open && editing && (
+        <div>
+          <div className="form-row">
+            <label className="form-label">租車公司</label>
+            <input className="form-input" value={draft.company || ''} onChange={e => update('company', e.target.value)} placeholder="格上 / 和運 / Hertz / ..." />
+          </div>
+          <div className="form-row-flex">
+            <div>
+              <label className="form-label">取車地點</label>
+              <input className="form-input" value={draft.pickupLocation || ''} onChange={e => update('pickupLocation', e.target.value)} />
+            </div>
+            <div>
+              <label className="form-label">取車時間</label>
+              <input className="form-input" value={draft.pickupTime || ''} onChange={e => update('pickupTime', e.target.value)} placeholder="週五 20:00" />
+            </div>
+          </div>
+          <div className="form-row-flex" style={{marginTop:10}}>
+            <div>
+              <label className="form-label">還車地點</label>
+              <input className="form-input" value={draft.returnLocation || ''} onChange={e => update('returnLocation', e.target.value)} />
+            </div>
+            <div>
+              <label className="form-label">還車時間</label>
+              <input className="form-input" value={draft.returnTime || ''} onChange={e => update('returnTime', e.target.value)} placeholder="週日 17:30" />
+            </div>
+          </div>
+          <div className="form-row" style={{marginTop:10}}>
+            <label className="form-label">訂單編號</label>
+            <input className="form-input" value={draft.bookingRef || ''} onChange={e => update('bookingRef', e.target.value)} placeholder="訂完車自己填" />
+          </div>
+          <div className="form-row">
+            <label className="form-label">備註</label>
+            <textarea className="form-textarea" value={draft.note || ''} onChange={e => update('note', e.target.value)} placeholder="保險、油資、注意事項..." style={{minHeight:60}} />
+          </div>
+          <div className="form-actions">
+            <button className="btn btn-ghost btn-sm" onClick={() => {setEditing(false); setDraft(rental || {});}}>取消</button>
+            <button className="btn btn-primary" onClick={save}>儲存</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ====================== DAY ======================
 function Day({ day, dayIndex, editingId, onItemEdit, onItemCancelEdit, onItemSave, onItemDelete, onItemMove, onItemToggleDone, onItemAdd, onPhotoClick }) {
-  const dayAccents = ['#FF5A36', '#0EA5BC', '#FF4A8B', '#1F8F53', '#FFB42A'];
+  const dayAccents = ['#0891B2', '#059669', '#0D9488', '#06B6D4', '#65A30D'];
   const accent = dayAccents[dayIndex % dayAccents.length];
   return (
     <div className="day" style={{'--day-accent': accent}}>
@@ -1370,6 +1579,11 @@ function App() {
     toast("已儲存");
   };
 
+  const handleRentalUpdate = (newRental) => {
+    updateData(d => ({...d, rental: newRental}));
+    toast("已儲存");
+  };
+
   const handleExport = () => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
@@ -1447,6 +1661,7 @@ function App() {
       </header>
 
       <HSRCard hsr={data.hsr} onUpdate={handleHsrUpdate} />
+      <RentalCard rental={data.rental} onUpdate={handleRentalUpdate} />
 
       {data.days.map((day, idx) => (
         <Day
