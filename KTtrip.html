@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F5EBD7">
+<title>墾丁兩天一夜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root {
+    /* Sunset & sand background */
+    --bg: #FFF1DC;
+    --bg-soft: #FFE2BF;
+    --bg-warm: #FFDCC4;
+    --paper: #FFFCF5;
+
+    /* Deep ocean ink */
+    --ink: #16263A;
+    --ink-soft: #3E5566;
+    --ink-mute: #8FA0AC;
+
+    /* Soft lines */
+    --line: #F2D5A8;
+    --line-soft: #FAEACA;
+
+    /* TROPICAL PALETTE */
+    --ocean: #0EA5BC;
+    --ocean-deep: #0A7A8B;
+    --ocean-soft: #6FCFDD;
+
+    --coral: #FF5A36;
+    --coral-soft: #FF8C6E;
+    --coral-glow: #FFC2A8;
+
+    --sun: #FFB42A;
+    --sun-soft: #FFD06B;
+    --sun-deep: #B07B0A;
+
+    --pink: #FF4A8B;
+    --pink-soft: #FF85AE;
+
+    --palm: #1F8F53;
+    --palm-soft: #5DB880;
+
+    --sand: #E8B870;
+    --shell: #FFE5D0;
+  }
+  *,*::before,*::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: "Noto Sans TC", system-ui, sans-serif;
+    background: linear-gradient(180deg, #FFF1DC 0%, #FFE2BF 50%, #FFDCC4 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(14,165,188,0.12), transparent 35%),
+      radial-gradient(circle at 92% 12%, rgba(255,180,42,0.18), transparent 38%),
+      radial-gradient(circle at 88% 88%, rgba(255,74,139,0.10), transparent 40%),
+      radial-gradient(circle at 8% 92%, rgba(31,143,83,0.08), transparent 38%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .app { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 18px 80px; }
+  .serif { font-family: "Noto Serif TC", "Cormorant Garamond", Georgia, serif; }
+  .mono { font-family: "JetBrains Mono", "SF Mono", Menlo, monospace; }
+
+  /* HEADER */
+  .hero {
+    padding: 36px 0 22px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: visible;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    top: 8px; right: -20px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle at center, var(--sun) 0%, var(--coral-soft) 35%, transparent 65%);
+    border-radius: 50%;
+    opacity: 0.45;
+    z-index: -1;
+    filter: blur(2px);
+  }
+  .hero-eyebrow {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ocean-deep);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+  }
+  .hero-eyebrow::before {
+    content:""; flex: 0 0 28px; height: 2px; background: var(--ocean);
+    border-radius: 2px;
+  }
+  .hero-title {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 900;
+    font-size: clamp(38px, 9.5vw, 60px);
+    line-height: 1.0;
+    margin: 0 0 8px;
+    letter-spacing: -0.025em;
+    background: linear-gradient(115deg, var(--coral) 0%, var(--sun) 45%, var(--pink) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-title-edit {
+    background: transparent; border: none; padding: 0; margin: 0;
+    font: inherit;
+    width: 100%;
+    outline: none;
+    -webkit-text-fill-color: initial;
+    color: var(--ink);
+  }
+  .hero-title-edit:focus { box-shadow: 0 2px 0 var(--coral); }
+  .hero-meta {
+    display: flex; flex-wrap: wrap;
+    gap: 8px 18px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-meta-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 500;
+  }
+  .hero-meta-item svg { color: var(--ocean); flex-shrink: 0; }
+  .hero-actions {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px;
+    position: relative;
+    z-index: 1;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    font: 500 12px "Noto Sans TC", sans-serif;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-appearance: none;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn-primary { background: var(--ocean); color: var(--paper); border-color: var(--ocean); }
+  .btn-primary:hover { background: var(--ink); border-color: var(--ink); }
+  .btn-coral { background: var(--coral); color: var(--paper); border-color: var(--coral); }
+  .btn-coral:hover { background: #A03B25; border-color: #A03B25; }
+  .btn-ghost { border-color: var(--line); color: var(--ink-soft); }
+  .btn-ghost:hover { background: var(--paper); color: var(--ink); border-color: var(--ink-soft); }
+  .btn-sm { padding: 5px 10px; font-size: 11px; }
+  .btn-icon { padding: 7px; border-radius: 50%; }
+
+  /* INFO CARD (HSR) */
+  .info-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: 6px 6px 0 rgba(14,165,188,0.18);
+    position: relative;
+  }
+  .info-card::before {
+    content: "";
+    position: absolute;
+    left: -1px; top: -1px; bottom: -1px;
+    width: 4px;
+    background: linear-gradient(180deg, var(--ocean) 0%, var(--coral) 100%);
+    border-radius: 4px 0 0 4px;
+  }
+  .info-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+    cursor: pointer;
+  }
+  .info-card-title {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 700;
+    font-size: 19px;
+    display: flex; align-items: center; gap: 10px;
+    margin: 0;
+    color: var(--ink);
+  }
+  .info-card-title-num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    background: var(--ocean);
+    color: var(--paper);
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+  }
+  .hsr-grid {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+    font-size: 13px;
+  }
+  @media (min-width: 560px) { .hsr-grid { grid-template-columns: 1fr 1fr; gap: 18px; } }
+  .hsr-leg {
+    border-left: 2px solid var(--ocean);
+    padding-left: 14px;
+  }
+  .hsr-leg.return { border-color: var(--coral); }
+  .hsr-leg-label {
+    font: 600 10px/1 "JetBrains Mono", monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ocean);
+    margin-bottom: 6px;
+  }
+  .hsr-leg.return .hsr-leg-label { color: var(--coral); }
+  .hsr-route {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+  .hsr-detail { display: flex; gap: 8px; align-items: baseline; font-size: 12px; color: var(--ink-soft); margin-bottom: 4px; }
+  .hsr-detail-label { font: 500 10px "JetBrains Mono", monospace; letter-spacing: 0.05em; color: var(--ink-mute); min-width: 50px; }
+
+  /* DAY SECTION */
+  .day {
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .day-header {
+    display: flex; align-items: flex-end; gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    position: relative;
+  }
+  .day-header::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--day-accent, var(--coral)) 0%, var(--day-accent, var(--coral)) 35%, transparent 100%);
+    border-radius: 2px;
+  }
+  .day-num {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 900;
+    font-size: 72px;
+    line-height: 0.82;
+    color: var(--day-accent, var(--coral));
+    letter-spacing: -0.05em;
+    font-style: italic;
+    text-shadow: 3px 3px 0 rgba(255,255,255,0.5);
+  }
+  .day-meta {
+    flex: 1; padding-bottom: 6px;
+  }
+  .day-label {
+    font: 600 10px/1 "JetBrains Mono", monospace;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--day-accent, var(--coral));
+    margin-bottom: 8px;
+    opacity: 0.85;
+  }
+  .day-title {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 700;
+    font-size: 23px;
+    margin: 0;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 0;
+  }
+
+  /* ITEM CARD */
+  .item {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    margin-bottom: 14px;
+    position: relative;
+    transition: all 0.2s;
+    overflow: hidden;
+    box-shadow: 2px 2px 0 rgba(232,184,112,0.3);
+  }
+  .item:hover { box-shadow: 4px 4px 0 rgba(232,184,112,0.45); transform: translate(-1px, -1px); }
+  .item.done { opacity: 0.55; box-shadow: 1px 1px 0 var(--line-soft); transform: none; }
+  .item.done:hover { transform: none; }
+  .item.done .item-name { text-decoration: line-through; text-decoration-color: var(--ink-mute); }
+  .item-main {
+    padding: 16px 18px;
+  }
+  .item-top {
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .item-time-block {
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 56px;
+  }
+  .item-time {
+    font: 600 16px "JetBrains Mono", monospace;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .item-duration {
+    font: 500 10px "JetBrains Mono", monospace;
+    color: var(--ink-mute);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+  .item-body { flex: 1; min-width: 0; }
+  .item-name {
+    font-family: "Noto Serif TC", serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 1.25;
+    margin: 0 0 4px;
+    color: var(--ink);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .item-name:hover, .item-name:active { border-bottom-color: var(--ocean); }
+  .item-name-link {
+    display: inline-flex; align-items: center; gap: 4px;
+    color: inherit; text-decoration: none;
+  }
+  .item-name-link svg { color: var(--ocean); flex-shrink: 0; }
+  .item-meta {
+    display: flex; flex-wrap: wrap; gap: 6px 10px;
+    font-size: 11px;
+    color: var(--ink-mute);
+    margin-bottom: 8px;
+    font-family: "JetBrains Mono", monospace;
+    letter-spacing: 0.04em;
+  }
+  .item-cat {
+    display: inline-flex; align-items: center;
+    padding: 1px 7px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .cat-景點 { background: rgba(14,165,188,0.16); color: var(--ocean-deep); }
+  .cat-餐廳 { background: rgba(255,90,54,0.16); color: var(--coral); }
+  .cat-交通 { background: rgba(31,143,83,0.14); color: var(--palm); }
+  .cat-住宿 { background: rgba(255,180,42,0.22); color: var(--sun-deep); }
+  .cat-活動 { background: rgba(255,74,139,0.14); color: var(--pink); }
+  .item-notes {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 6px 0 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .item-actions {
+    display: flex; align-items: center; gap: 4px;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--ink-mute);
+    transition: all 0.15s;
+    padding: 0;
+  }
+  .icon-btn:active { transform: scale(0.93); }
+  .icon-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .icon-btn.done-active { background: var(--palm); border-color: var(--palm); color: white; }
+
+  /* PHOTO ON RIGHT */
+  .item-photo-right {
+    flex-shrink: 0;
+    width: 96px;
+    cursor: pointer;
+    position: relative;
+    align-self: flex-start;
+  }
+  .item-photo-right img {
+    width: 96px; height: 96px;
+    border-radius: 3px;
+    object-fit: cover;
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    display: block;
+    transition: transform 0.15s;
+  }
+  .item-photo-right:active img { transform: scale(0.97); }
+  .item-photo-count {
+    position: absolute;
+    bottom: 5px; right: 5px;
+    background: rgba(0,0,0,0.78);
+    color: white;
+    font: 600 10px "JetBrains Mono", monospace;
+    padding: 2px 6px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+  .item-photo-placeholder {
+    width: 96px; height: 96px;
+    border: 1.5px dashed var(--line);
+    border-radius: 3px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px;
+    color: var(--ink-mute);
+    background: var(--bg-soft);
+    cursor: pointer;
+    transition: all 0.15s;
+    font: 500 10px "JetBrains Mono", monospace;
+    letter-spacing: 0.1em;
+  }
+  .item-photo-placeholder:hover { border-color: var(--ocean); color: var(--ocean); background: var(--paper); }
+  @media (max-width: 400px) {
+    .item-photo-right, .item-photo-right img, .item-photo-placeholder { width: 76px; }
+    .item-photo-right img, .item-photo-placeholder { height: 76px; }
+  }
+
+  /* Action bar */
+  .item-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line-soft);
+  }
+
+  /* PHOTO MODAL NAV */
+  .photo-modal-nav {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: none; border-radius: 50%;
+    font-size: 28px; line-height: 1;
+    cursor: pointer;
+    z-index: 10;
+    font-family: Georgia, serif;
+    padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .photo-modal-nav:active { background: rgba(255,255,255,0.3); }
+  .photo-modal-nav.prev { left: 16px; }
+  .photo-modal-nav.next { right: 16px; }
+  .photo-modal-counter {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font: 500 12px "JetBrains Mono", monospace;
+    letter-spacing: 0.1em;
+  }
+
+  /* ADD ITEM BUTTON */
+  .add-item {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px dashed var(--line);
+    border-radius: 4px;
+    color: var(--ink-mute);
+    font: 500 13px "Noto Sans TC", sans-serif;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.15s;
+  }
+  .add-item:hover { border-color: var(--ocean); color: var(--ocean); background: var(--paper); }
+  .add-item:active { transform: scale(0.99); }
+
+  /* EDIT FORM */
+  .edit-form {
+    border-top: 1px solid var(--line);
+    padding: 16px 18px;
+    background: var(--bg-soft);
+    animation: slideIn 0.2s ease-out;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .form-row { margin-bottom: 12px; }
+  .form-row-flex { display: flex; gap: 8px; }
+  .form-row-flex > * { flex: 1; min-width: 0; }
+  .form-label {
+    display: block;
+    font: 500 10px "JetBrains Mono", monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 5px;
+  }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font: 14px "Noto Sans TC", sans-serif;
+    color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--ocean);
+  }
+  .form-textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  .form-select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%231A1A1A' fill='none' stroke-width='1.5' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+  }
+  .form-help {
+    font: 11px "JetBrains Mono", monospace;
+    color: var(--ink-mute);
+    margin-top: 4px;
+    letter-spacing: 0.03em;
+  }
+  .photo-upload {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    margin-top: 6px;
+  }
+  .photo-edit-thumb {
+    position: relative;
+    width: 64px; height: 64px;
+  }
+  .photo-edit-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+    border-radius: 3px; border: 1px solid var(--line);
+  }
+  .photo-remove {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px;
+    background: var(--coral); color: white;
+    border-radius: 50%; border: 2px solid var(--paper);
+    font-size: 12px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    font-weight: bold;
+  }
+  .upload-btn {
+    width: 64px; height: 64px;
+    border: 1.5px dashed var(--line);
+    background: var(--paper);
+    border-radius: 3px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--ink-mute);
+    transition: all 0.15s;
+  }
+  .upload-btn:hover { border-color: var(--ocean); color: var(--ocean); }
+  .photo-url-input {
+    flex: 1; min-width: 0;
+    margin-top: 8px;
+  }
+  .form-actions {
+    display: flex; gap: 8px; justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    margin-top: 4px;
+  }
+  .form-actions-right { display: flex; gap: 8px; }
+
+  /* MODAL */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(26,26,26,0.4);
+    z-index: 99;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.15s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--paper);
+    border-radius: 4px;
+    max-width: 480px;
+    width: 100%;
+    padding: 22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal-title { font-family: "Noto Serif TC", serif; font-weight: 700; font-size: 20px; margin: 0 0 14px; }
+  .modal-body { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 16px; }
+  .photo-modal {
+    background: rgba(0,0,0,0.92);
+    padding: 0;
+  }
+  .photo-modal img {
+    max-width: 100%; max-height: 90vh;
+    object-fit: contain;
+  }
+  .photo-modal-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15); color: white;
+    border: none; border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 60px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    color: var(--ink-mute);
+    font: 11px "JetBrains Mono", monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .footer-divider {
+    display: inline-block; width: 30px; height: 1px;
+    background: var(--ink-mute);
+    margin: 0 12px; vertical-align: middle;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--paper);
+    padding: 12px 20px;
+    border-radius: 999px;
+    font: 500 13px "Noto Sans TC", sans-serif;
+    z-index: 200;
+    animation: toastIn 0.2s ease-out;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+  
+  /* DRAG handle */
+  .drag-handle {
+    cursor: grab;
+    color: var(--ink-mute);
+    padding: 4px 2px;
+    user-select: none;
+  }
+  .drag-handle:active { cursor: grabbing; }
+
+  /* iOS specific */
+  @supports (-webkit-touch-callout: none) {
+    .form-input, .form-textarea, .form-select { font-size: 16px; } /* prevent zoom on iOS */
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+// ====================== ICONS ======================
+const Icon = {
+  Map: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>,
+  Pin: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+  Edit: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  Trash: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>,
+  Check: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  Plus: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  Camera: () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+  Download: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  Upload: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
+  ArrowUp: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"/></svg>,
+  ArrowDown: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>,
+  Clock: () => <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  Train: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="M8 19l-2 3"/><path d="M16 19l2 3"/><circle cx="8" cy="15" r="1"/><circle cx="16" cy="15" r="1"/></svg>,
+  Chevron: ({open}) => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{transition:'transform .2s', transform: open?'rotate(180deg)':'none'}}><polyline points="6 9 12 15 18 9"/></svg>,
+  Link: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
+};
+
+// ====================== HELPERS ======================
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+
+const buildMapsUrl = (item) => {
+  if (item.mapsUrl) return item.mapsUrl;
+  if (item.lat && item.lng) {
+    return `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}`;
+  }
+  const q = encodeURIComponent([item.name, item.address].filter(Boolean).join(' '));
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+};
+
+const formatDuration = (min) => {
+  if (!min) return '';
+  if (min < 60) return `${min} 分`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return m ? `${h} 時 ${m} 分` : `${h} 小時`;
+};
+
+const compressImage = (file, maxWidth = 800) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onerror = () => reject(new Error('讀取失敗'));
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onerror = () => reject(new Error('解碼失敗'));
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      try {
+        resolve(canvas.toDataURL('image/jpeg', 0.78));
+      } catch (err) { reject(err); }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Extract lat/lng or place from a Google Maps URL
+const parseMapsUrl = (url) => {
+  if (!url) return null;
+  // @lat,lng pattern
+  const at = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (at) return { lat: parseFloat(at[1]), lng: parseFloat(at[2]) };
+  // !3d!4d coordinates
+  const d = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if (d) return { lat: parseFloat(d[1]), lng: parseFloat(d[2]) };
+  // q=lat,lng or query=lat,lng or destination=lat,lng
+  const q = url.match(/[?&](?:q|query|destination)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (q) return { lat: parseFloat(q[1]), lng: parseFloat(q[2]) };
+  return null;
+};
+
+// ====================== DEFAULT DATA ======================
+const DEFAULT_DATA = {
+  version: 1,
+  title: "墾丁兩天一夜",
+  subtitle: "Pingtung Weekend",
+  origin: "梧棲勝興豐境",
+  hsr: {
+    outbound: {
+      route: "台中 → 左營",
+      suggestedTime: "19:00 - 19:30",
+      duration: "47-64 分鐘",
+      price: "對號座 NT$790 / 自由座 NT$765",
+      note: "早鳥 9 折 710 / 8 折 630 / 65 折 510",
+    },
+    inbound: {
+      route: "左營 → 台中",
+      suggestedTime: "18:30 - 19:00",
+      duration: "47-64 分鐘",
+      price: "對號座 NT$790 / 自由座 NT$765",
+      note: "回程班次多，現場買也 OK",
+    },
+  },
+  days: [
+    {
+      id: "fri",
+      label: "FRI 週五",
+      title: "出發 · 夜衝墾丁",
+      items: [
+        { id: uid(), time: "17:30", duration: 30, category: "交通", name: "梧棲勝興豐境出發", lat: 24.265, lng: 120.524, notes: "週五尖峰建議走台 74 或國 1 接 74 快，避免市區塞車。" },
+        { id: uid(), time: "18:30", duration: 30, category: "交通", name: "台中高鐵站", address: "台中市烏日區站區二路8號", lat: 24.1121, lng: 120.6162, notes: "預留 15 分還車/停車。\n停車場 P1 立體 50/hr，全日上限 350。" },
+        { id: uid(), time: "19:00", duration: 60, category: "交通", name: "搭高鐵南下", notes: "對號座 NT$790，直達車約 47 分。\n用 T-EX App 訂位最方便。" },
+        { id: uid(), time: "20:00", duration: 30, category: "交通", name: "左營高鐵站取車", address: "高雄市左營區高鐵路105號", lat: 22.6873, lng: 120.3074, notes: "建議事先預約格上或和運直接在高鐵站取車。" },
+        { id: uid(), time: "20:30", duration: 120, category: "交通", name: "開車到墾丁", notes: "國 3 → 國 88 快 → 台 26，約 95 km，1.5-2 小時。\n墾丁加油站在恆春鎮上，越南越少。" },
+        { id: uid(), time: "22:30", duration: 0, category: "住宿", name: "抵達住宿 / 墾丁大街宵夜", lat: 21.9456, lng: 120.7964, notes: "墾丁大街夜市營業到 22:30，趕得上可以吃個山豬肉香腸+涼飲。" },
+      ],
+    },
+    {
+      id: "sat",
+      label: "SAT 週六",
+      title: "海生館 → 古城 → 日落 → 夜市",
+      items: [
+        { id: uid(), time: "09:00", duration: 240, category: "景點", name: "屏東國立海洋生物博物館", address: "屏東縣車城鄉後灣路2號", lat: 22.0460, lng: 120.6989, notes: "9:00 開門人最少。台灣水域館→珊瑚王國館→世界水域館。\n線上預購票較便宜（KKday/Klook）。\n館內冷氣強，記得帶外套。", photos: ["https://lh3.googleusercontent.com/places/ANXAkqESdHRFTq_9zTZh3iqOGh5-WGP-itfE-WX6dh9N9w5ZAJONMq2Xi2Z1kZeiA2oI2wbyh6GsaqE8KiftU1rRP8KwdSfmQLJSBA=w400","https://lh3.googleusercontent.com/place-photos/AJRVUZMW-BkBVkMwc-3Dhkd9zFd-wnR1VVWtWg8upS7pWauO2NriBbDAFtRK91nhQedEiSuequ8gYbxjFN8Ixm8_k1eN7vNOlHndzuE5s34Aue29YRj2wZYJbF9du6dZX2qobosaVDKbaZugNyJ7dEo=w400"] },
+        { id: uid(), time: "13:30", duration: 60, category: "餐廳", name: "車城 / 恆春午餐", notes: "推薦：車城福安宮旁綠豆蒜、或回恆春鎮上正記、阿伯綠豆蒜、洪家燒冷冰。" },
+        { id: uid(), time: "14:30", duration: 120, category: "景點", name: "恆春古城西門 + 老街", address: "屏東縣恆春鎮", lat: 22.0056, lng: 120.7433, notes: "西門 → 南門 → 東門一圈，搭配恆春老街吃綠豆蒜。\n停車：西門城外公有停車場。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZMFejIBs_UPKFe7CkmqCUvHihM8xYGKI1mptBTdsoG5qkzFt68afxTGrK8J4VizSyg_ZjOBtWYpQ-_wuAp7sY6W7vAchNIFf6Msu65XKdG3D3l0XKtXhngYKP6ytm-9bztHWlEZaFjaXuBtWw=w400"] },
+        { id: uid(), time: "17:00", duration: 90, category: "景點", name: "高山巖福德宮（關山日落）", address: "屏東縣恆春鎮砂尾路", lat: 21.9636, lng: 120.7196, notes: "5 月日落約 18:30-18:45。\n17:30 前到才有好位置。\n免門票、免費停車。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZPpP0W_hxXCGh6RaogeGCL9hBOZPVrA3P5-J94VL3kSByqikNRBF1k6wgVEUJKWbPPRGk1wc8xEKsSVOcCfuC75-ULLfnRMTNyfrYWIVSQRVjSA9D29S7nZv4OfYuJT8I57Um76umb7iPXT_g=w400"] },
+        { id: uid(), time: "19:00", duration: 150, category: "活動", name: "墾丁大街夜市", address: "屏東縣恆春鎮墾丁路", lat: 21.9456, lng: 120.7964, notes: "推薦：山豬肉香腸、烤魷魚、香蕉煎餅、現切水果。\n停車在墾丁牌樓附近較不會塞。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZMD-OWeCOwu1o-voFmMUH3LFjMw5rkpjRuN2RgQX8JbCo7hU64Q6oLTWkgDN-qfAvhHlnp37XU9K7khWAz0TIjC7y6cM4CNON1svhe4517cxyEZQ6PCqKXtaHyEqbpfZxjB-zsLnCiQMaDE=w400"] },
+      ],
+    },
+    {
+      id: "sun",
+      label: "SUN 週日",
+      title: "燈塔 → 龍磐 → 生魚片 → 四重溪",
+      items: [
+        { id: uid(), time: "09:00", duration: 75, category: "景點", name: "鵝鑾鼻燈塔", address: "屏東縣恆春鎮燈塔路90號", lat: 21.9022, lng: 120.8526, notes: "9:00 開園，門票 60。\n順遊台灣最南點地標（園外步行約 10 分鐘）。\n週一公休、週日 OK。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZPhA2DOavBI3nOyzUoU_QwbQeNvxKESqxwd2kXikKJtdIgLactvHoX1Cdq6YfpG5eFJy8f3OSigJLUq3vMjdp16-P3hymTAqgcYJCsC8H-uPQneVWI3SHdxwKt70LFqxZvOFio8lmWXd6RM5A=w400","https://lh3.googleusercontent.com/place-photos/AJRVUZMakqhEopblpaXN1XARPiIe-d6u8Dg4ikcNXApyc3VljD9r-A59qrfF50Z41VRagHaOznH-fr5zexMIwXcdb0zzTOIESzXN6qD3e_pKVE8uaxJrNkmCh0Nl9GN2Va2PoB-ayYqbIheJjZVNrw=w400"] },
+        { id: uid(), time: "10:45", duration: 45, category: "景點", name: "龍磐公園", address: "屏東縣恆春鎮台26線", lat: 21.9272, lng: 120.8480, notes: "離鵝鑾鼻 5 分鐘車程。\n太平洋無敵海景+大草原，5 月最綠。\n風大，戴帽子。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZP1wACunzYUQTRfz_HUtwx1xtvmZWt1TE5j9R47Bu0Aioz1LpCOO2wcggzgdX750G_NsFkz50t7pCKdXepfROJJJ5ln-6VnmVJcqPx4MfCdgnZ0lWenyYBYzxR0xFkf2jwH6dKhl5mSNJqdhQ=w400"] },
+        { id: uid(), time: "11:45", duration: 75, category: "餐廳", name: "阿興生魚片（後壁湖）", address: "屏東縣恆春鎮大光路8-11號", lat: 21.9516, lng: 120.7409, notes: "11:30 前到不用排隊。\n推薦：10 刀綜合生魚片、炒空心菜、味噌魚湯、生蠔。", photos: ["https://lh3.googleusercontent.com/places/ANXAkqEJrlFFK-B1guzIqX3Elx7XzKG_4MoRglPCAH3coNR_Ut9VhR_Of6MLuZYSC4D5lq9VvVQQ2sbjP0mGL8u2srlEWiOJnRUaYQg=w400","https://lh3.googleusercontent.com/places/ANXAkqF23qqiMiqA5SKM2BVW0UI9Agf2tiLGgL12OSziHrN3quGUohnkR1TO0VbMHaWuXzraU-BbfxsNh20Cqpag1BvYGoRo6YOb-B4=w400"] },
+        { id: uid(), time: "13:45", duration: 135, category: "活動", name: "四重溪溫泉公園 + 清泉日式溫泉館", address: "屏東縣車城鄉文化路5號", lat: 22.0949, lng: 120.7482, notes: "後壁湖→車城約 40 分鐘。\n免費公共泡腳池 + 溫泉煮蛋區（85 度，租竹簍 50 元）。\n清泉大眾池 NT$350 / 6 小時（須泳衣+泳帽，泳帽 80 元現買）。\n現金支付，刷卡不行。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZOJstBDvgrvKM6VsA4TPIP9eXudMD5H2lF8h-CBE9Vcb3bhQw5heP8OrWkQ4W2LlMSWMZXR_NcLQ14RJIcgHgb12zn5n3rv2DgJnLUF8ccbwOPkASjMhAy49BqMwZz-HzQWKxHJ59rg_UgYkhE=w400"] },
+        { id: uid(), time: "16:00", duration: 30, category: "交通", name: "上國 3 → 左營還車", notes: "從車城上南州交流道，5 分鐘上國 3。\n左營距 110 km，車程約 1.5 小時。\n還車前 30 分加油+檢查。" },
+        { id: uid(), time: "18:30", duration: 60, category: "交通", name: "高鐵北返", address: "高雄市左營區高鐵路105號", lat: 22.6873, lng: 120.3074, notes: "左營 → 台中 NT$790。\n預估抵達台中 19:20-19:30。" },
+      ],
+    },
+  ],
+};
+
+const STORAGE_KEY = "kenting_trip_v2";
+const OLD_STORAGE_KEYS = ["kenting_trip_v1"];
+
+// Build a name → photos lookup from default data
+function buildPhotoMap() {
+  const map = {};
+  DEFAULT_DATA.days.forEach(day => {
+    day.items.forEach(item => {
+      if (item.photos && item.photos.length > 0) {
+        map[item.name] = item.photos;
+      }
+    });
+  });
+  return map;
+}
+
+// Migrate from older storage keys, preserving user edits but enriching with photos
+function migrateFromOldKey() {
+  const photoMap = buildPhotoMap();
+  for (const oldKey of OLD_STORAGE_KEYS) {
+    try {
+      const raw = localStorage.getItem(oldKey);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.days) continue;
+      // Enrich items missing photos with defaults if name matches
+      parsed.days.forEach(day => {
+        day.items.forEach(item => {
+          if ((!item.photos || item.photos.length === 0) && photoMap[item.name]) {
+            item.photos = [...photoMap[item.name]];
+          }
+        });
+      });
+      // Save under new key, leave old key alone for safety
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      return parsed;
+    } catch (e) { console.warn("migrate failed", oldKey, e); }
+  }
+  return null;
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.days) return parsed;
+    }
+    const migrated = migrateFromOldKey();
+    if (migrated) return migrated;
+  } catch (e) { console.warn("load failed", e); }
+  return DEFAULT_DATA;
+}
+
+function saveData(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    return true;
+  } catch (e) {
+    console.error("save failed", e);
+    return false;
+  }
+}
+
+// ====================== TOAST ======================
+function useToast() {
+  const [msg, setMsg] = useState(null);
+  const timer = useRef(null);
+  const show = (m) => {
+    setMsg(m);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setMsg(null), 2200);
+  };
+  const node = msg ? <div className="toast">{msg}</div> : null;
+  return [show, node];
+}
+
+// ====================== PHOTO MODAL ======================
+function PhotoModal({ photos, initialIndex, onClose }) {
+  const [idx, setIdx] = useState(initialIndex || 0);
+  const total = photos.length;
+  const prev = (e) => { if (e) e.stopPropagation(); setIdx(i => (i - 1 + total) % total); };
+  const next = (e) => { if (e) e.stopPropagation(); setIdx(i => (i + 1) % total); };
+  useEffect(() => {
+    const h = (e) => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowLeft' && total > 1) prev();
+      else if (e.key === 'ArrowRight' && total > 1) next();
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [onClose, total]);
+  return (
+    <div className="modal-backdrop photo-modal" onClick={onClose}>
+      <button className="photo-modal-close" onClick={onClose}>×</button>
+      {total > 1 && <button className="photo-modal-nav prev" onClick={prev} aria-label="上一張">‹</button>}
+      <img src={photos[idx]} alt="" onClick={e => e.stopPropagation()} />
+      {total > 1 && <button className="photo-modal-nav next" onClick={next} aria-label="下一張">›</button>}
+      {total > 1 && <div className="photo-modal-counter">{idx + 1} / {total}</div>}
+    </div>
+  );
+}
+
+// ====================== CONFIRM MODAL ======================
+function ConfirmModal({ title, body, onConfirm, onCancel, danger }) {
+  return (
+    <div className="modal-backdrop" onClick={onCancel}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <h3 className="modal-title">{title}</h3>
+        <div className="modal-body">{body}</div>
+        <div style={{display:'flex', justifyContent:'flex-end', gap:8}}>
+          <button className="btn btn-ghost" onClick={onCancel}>取消</button>
+          <button className={danger ? "btn btn-coral" : "btn btn-primary"} onClick={onConfirm}>確認</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ====================== ITEM EDIT FORM ======================
+function ItemEditForm({ item, onSave, onCancel, onAddPhoto, onRemovePhoto, onPasteUrl }) {
+  const [draft, setDraft] = useState({...item});
+  const fileRef = useRef(null);
+  const [urlInput, setUrlInput] = useState('');
+
+  const update = (k, v) => setDraft(d => ({...d, [k]: v}));
+
+  const handleFile = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    for (const f of files) {
+      try {
+        const dataUrl = await compressImage(f, 900);
+        setDraft(d => ({...d, photos: [...(d.photos||[]), dataUrl]}));
+      } catch (err) {
+        alert('照片處理失敗：' + err.message);
+      }
+    }
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
+  const addUrlPhoto = () => {
+    const u = urlInput.trim();
+    if (!u) return;
+    setDraft(d => ({...d, photos: [...(d.photos||[]), u]}));
+    setUrlInput('');
+  };
+
+  const removePhoto = (idx) => {
+    setDraft(d => ({...d, photos: (d.photos||[]).filter((_,i) => i !== idx)}));
+  };
+
+  const tryParseUrl = (url) => {
+    update('mapsUrl', url);
+    const parsed = parseMapsUrl(url);
+    if (parsed) {
+      update('lat', parsed.lat);
+      update('lng', parsed.lng);
+    }
+  };
+
+  return (
+    <div className="edit-form">
+      <div className="form-row form-row-flex">
+        <div style={{flex: '0 0 90px'}}>
+          <label className="form-label">時間</label>
+          <input type="time" className="form-input" value={draft.time || ''} onChange={e => update('time', e.target.value)} />
+        </div>
+        <div style={{flex: '0 0 88px'}}>
+          <label className="form-label">時長(分)</label>
+          <input type="number" className="form-input" value={draft.duration || 0} onChange={e => update('duration', parseInt(e.target.value) || 0)} min="0" step="15" />
+        </div>
+        <div>
+          <label className="form-label">類別</label>
+          <select className="form-select" value={draft.category || '景點'} onChange={e => update('category', e.target.value)}>
+            <option value="景點">景點</option>
+            <option value="餐廳">餐廳</option>
+            <option value="交通">交通</option>
+            <option value="住宿">住宿</option>
+            <option value="活動">活動</option>
+          </select>
+        </div>
+      </div>
+      <div className="form-row">
+        <label className="form-label">名稱</label>
+        <input type="text" className="form-input" value={draft.name || ''} onChange={e => update('name', e.target.value)} placeholder="景點 / 餐廳名稱" />
+      </div>
+      <div className="form-row">
+        <label className="form-label">地址</label>
+        <input type="text" className="form-input" value={draft.address || ''} onChange={e => update('address', e.target.value)} placeholder="完整地址" />
+      </div>
+      <div className="form-row">
+        <label className="form-label">Google Maps 連結（貼上會自動抓座標）</label>
+        <input type="url" className="form-input" value={draft.mapsUrl || ''} onChange={e => tryParseUrl(e.target.value)} placeholder="https://maps.google.com/..." />
+        <div className="form-help">
+          {draft.lat && draft.lng ? `📍 ${draft.lat.toFixed(4)}, ${draft.lng.toFixed(4)}` : '可貼整段 Maps 網址；或留空也可以，點名稱時會用「名稱+地址」搜尋'}
+        </div>
+      </div>
+      <div className="form-row form-row-flex">
+        <div>
+          <label className="form-label">緯度</label>
+          <input type="number" className="form-input" value={draft.lat || ''} onChange={e => update('lat', parseFloat(e.target.value) || null)} step="0.000001" placeholder="22.0046" />
+        </div>
+        <div>
+          <label className="form-label">經度</label>
+          <input type="number" className="form-input" value={draft.lng || ''} onChange={e => update('lng', parseFloat(e.target.value) || null)} step="0.000001" placeholder="120.6989" />
+        </div>
+      </div>
+      <div className="form-row">
+        <label className="form-label">備註</label>
+        <textarea className="form-textarea" value={draft.notes || ''} onChange={e => update('notes', e.target.value)} placeholder="開放時間、票價、注意事項、菜單..." />
+      </div>
+      <div className="form-row">
+        <label className="form-label">照片</label>
+        <div className="photo-upload">
+          {(draft.photos || []).map((p, i) => (
+            <div key={i} className="photo-edit-thumb">
+              <img src={p} alt="" />
+              <button className="photo-remove" onClick={() => removePhoto(i)} aria-label="移除">×</button>
+            </div>
+          ))}
+          <label className="upload-btn" title="上傳照片">
+            <Icon.Camera />
+            <input ref={fileRef} type="file" accept="image/*" multiple style={{display:'none'}} onChange={handleFile} />
+          </label>
+        </div>
+        <div style={{display:'flex', gap:6, marginTop:8}}>
+          <input type="url" className="form-input" placeholder="或貼上圖片網址..." value={urlInput} onChange={e => setUrlInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addUrlPhoto()} />
+          <button className="btn btn-ghost btn-sm" onClick={addUrlPhoto}>加入</button>
+        </div>
+      </div>
+      <div className="form-actions">
+        <button className="btn btn-ghost btn-sm" onClick={onCancel}>取消</button>
+        <button className="btn btn-primary" onClick={() => onSave(draft)}>儲存</button>
+      </div>
+    </div>
+  );
+}
+
+// ====================== ITEM CARD ======================
+function ItemCard({ item, isEditing, onEdit, onCancelEdit, onSave, onDelete, onToggleDone, onMove, onPhotoClick, isFirst, isLast }) {
+  const cat = item.category || '景點';
+  const mapsUrl = buildMapsUrl(item);
+  const [photoFailed, setPhotoFailed] = useState(false);
+  useEffect(() => { setPhotoFailed(false); }, [item.photos]);
+  const hasPhotos = item.photos && item.photos.length > 0 && !photoFailed;
+  const showPhotoColumn = hasPhotos || cat === '景點';
+
+  return (
+    <div className={`item ${item.done ? 'done' : ''}`}>
+      <div className="item-main">
+        <div className="item-top">
+          <div className="item-time-block">
+            <div className="item-time">{item.time || '—'}</div>
+            {item.duration ? <div className="item-duration">{formatDuration(item.duration)}</div> : null}
+          </div>
+          <div className="item-body">
+            <a className="item-name item-name-link" href={mapsUrl} target="_blank" rel="noopener" title="點擊用 Google Maps 導航">
+              {item.name}
+              <Icon.Pin />
+            </a>
+            <div className="item-meta">
+              <span className={`item-cat cat-${cat}`}>{cat}</span>
+              {item.address ? <span style={{opacity:0.85}}>{item.address}</span> : null}
+            </div>
+            {item.notes ? <div className="item-notes">{item.notes}</div> : null}
+          </div>
+          {showPhotoColumn && (
+            hasPhotos ? (
+              <div className="item-photo-right" onClick={() => onPhotoClick(item.photos, 0)} title="點看大圖">
+                <img src={item.photos[0]} alt="" loading="lazy" onError={() => setPhotoFailed(true)} />
+                {item.photos.length > 1 && <div className="item-photo-count">+{item.photos.length - 1}</div>}
+              </div>
+            ) : (
+              <div className="item-photo-placeholder" onClick={onEdit} title="加照片">
+                <Icon.Camera />
+                <span>加照片</span>
+              </div>
+            )
+          )}
+        </div>
+        {!isEditing && (
+          <div className="item-action-bar">
+            <button className={`icon-btn ${item.done ? 'done-active' : ''}`} onClick={onToggleDone} title="標記完成">
+              <Icon.Check />
+            </button>
+            <button className="icon-btn" onClick={onEdit} title="編輯">
+              <Icon.Edit />
+            </button>
+            <button className="icon-btn" onClick={() => onMove(-1)} disabled={isFirst} style={{opacity: isFirst ? 0.3 : 1}} title="上移">
+              <Icon.ArrowUp />
+            </button>
+            <button className="icon-btn" onClick={() => onMove(1)} disabled={isLast} style={{opacity: isLast ? 0.3 : 1}} title="下移">
+              <Icon.ArrowDown />
+            </button>
+            <button className="icon-btn" onClick={onDelete} title="刪除">
+              <Icon.Trash />
+            </button>
+          </div>
+        )}
+      </div>
+      {isEditing && (
+        <ItemEditForm item={item} onSave={onSave} onCancel={onCancelEdit} />
+      )}
+    </div>
+  );
+}
+
+// ====================== HSR CARD ======================
+function HSRCard({ hsr, onUpdate }) {
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(hsr);
+
+  const save = () => {
+    onUpdate(draft);
+    setEditing(false);
+  };
+
+  const renderLeg = (leg, isReturn) => (
+    <div className={`hsr-leg ${isReturn ? 'return' : ''}`}>
+      <div className="hsr-leg-label">{isReturn ? 'INBOUND · 回程' : 'OUTBOUND · 去程'}</div>
+      <div className="hsr-route">{leg.route}</div>
+      <div className="hsr-detail"><span className="hsr-detail-label">建議</span> {leg.suggestedTime}</div>
+      <div className="hsr-detail"><span className="hsr-detail-label">車程</span> {leg.duration}</div>
+      <div className="hsr-detail"><span className="hsr-detail-label">票價</span> {leg.price}</div>
+      {leg.note ? <div className="hsr-detail"><span className="hsr-detail-label">備註</span> <span style={{opacity:0.9}}>{leg.note}</span></div> : null}
+    </div>
+  );
+
+  return (
+    <div className="info-card">
+      <div className="info-card-header" onClick={() => setOpen(!open)}>
+        <h3 className="info-card-title">
+          <span className="info-card-title-num">HSR</span>
+          高鐵資訊
+        </h3>
+        <div style={{display:'flex', gap:6, alignItems:'center'}}>
+          {open && !editing && <button className="btn btn-ghost btn-sm" onClick={(e) => {e.stopPropagation(); setEditing(true);}}><Icon.Edit/> 編輯</button>}
+          <Icon.Chevron open={open} />
+        </div>
+      </div>
+      {open && !editing && (
+        <div className="hsr-grid">
+          {renderLeg(hsr.outbound, false)}
+          {renderLeg(hsr.inbound, true)}
+        </div>
+      )}
+      {open && editing && (
+        <div>
+          {['outbound', 'inbound'].map((key, i) => (
+            <div key={key} style={{marginBottom: 14, paddingBottom: 14, borderBottom: i === 0 ? '1px solid var(--line)' : 'none'}}>
+              <div className="form-label" style={{marginBottom: 8}}>{i === 0 ? '去程' : '回程'}</div>
+              <div className="form-row-flex">
+                <div><label className="form-label">路線</label><input className="form-input" value={draft[key].route} onChange={e => setDraft(d => ({...d, [key]: {...d[key], route: e.target.value}}))} /></div>
+                <div><label className="form-label">建議時間</label><input className="form-input" value={draft[key].suggestedTime} onChange={e => setDraft(d => ({...d, [key]: {...d[key], suggestedTime: e.target.value}}))} /></div>
+              </div>
+              <div className="form-row-flex" style={{marginTop: 8}}>
+                <div><label className="form-label">車程</label><input className="form-input" value={draft[key].duration} onChange={e => setDraft(d => ({...d, [key]: {...d[key], duration: e.target.value}}))} /></div>
+                <div><label className="form-label">票價</label><input className="form-input" value={draft[key].price} onChange={e => setDraft(d => ({...d, [key]: {...d[key], price: e.target.value}}))} /></div>
+              </div>
+              <div className="form-row" style={{marginTop: 8}}>
+                <label className="form-label">備註</label>
+                <input className="form-input" value={draft[key].note} onChange={e => setDraft(d => ({...d, [key]: {...d[key], note: e.target.value}}))} />
+              </div>
+            </div>
+          ))}
+          <div className="form-actions">
+            <button className="btn btn-ghost btn-sm" onClick={() => {setEditing(false); setDraft(hsr);}}>取消</button>
+            <button className="btn btn-primary" onClick={save}>儲存</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ====================== DAY ======================
+function Day({ day, dayIndex, editingId, onItemEdit, onItemCancelEdit, onItemSave, onItemDelete, onItemMove, onItemToggleDone, onItemAdd, onPhotoClick }) {
+  const dayAccents = ['#FF5A36', '#0EA5BC', '#FF4A8B', '#1F8F53', '#FFB42A'];
+  const accent = dayAccents[dayIndex % dayAccents.length];
+  return (
+    <div className="day" style={{'--day-accent': accent}}>
+      <div className="day-header">
+        <div className="day-num">{['I','II','III','IV','V'][dayIndex] || (dayIndex+1)}</div>
+        <div className="day-meta">
+          <div className="day-label">{day.label}</div>
+          <h2 className="day-title">{day.title}</h2>
+        </div>
+      </div>
+      <div className="timeline">
+        {day.items.map((item, idx) => (
+          <ItemCard
+            key={item.id}
+            item={item}
+            isEditing={editingId === item.id}
+            onEdit={() => onItemEdit(item.id)}
+            onCancelEdit={() => onItemCancelEdit()}
+            onSave={(draft) => onItemSave(day.id, item.id, draft)}
+            onDelete={() => onItemDelete(day.id, item.id)}
+            onToggleDone={() => onItemToggleDone(day.id, item.id)}
+            onMove={(dir) => onItemMove(day.id, item.id, dir)}
+            onPhotoClick={(photos, idx) => onPhotoClick({photos, index: idx})}
+            isFirst={idx === 0}
+            isLast={idx === day.items.length - 1}
+          />
+        ))}
+        <button className="add-item" onClick={() => onItemAdd(day.id)}>
+          <Icon.Plus /> 新增行程
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ====================== APP ======================
+function App() {
+  const [data, setData] = useState(loadData);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [photoModal, setPhotoModal] = useState(null);
+  const [confirm, setConfirm] = useState(null);
+  const [toast, toastNode] = useToast();
+  const importRef = useRef(null);
+
+  useEffect(() => {
+    saveData(data);
+  }, [data]);
+
+  const updateData = useCallback((updater) => {
+    setData(d => typeof updater === 'function' ? updater(d) : updater);
+  }, []);
+
+  const handleItemSave = (dayId, itemId, draft) => {
+    updateData(d => ({
+      ...d,
+      days: d.days.map(day => day.id !== dayId ? day : {
+        ...day,
+        items: day.items.map(it => it.id !== itemId ? it : {...draft, id: itemId}),
+      }),
+    }));
+    setEditingId(null);
+    toast("已儲存");
+  };
+
+  const handleItemDelete = (dayId, itemId) => {
+    setConfirm({
+      title: "刪除這個行程？",
+      body: "刪除後將無法復原，但你可以隨時新增。",
+      danger: true,
+      onConfirm: () => {
+        updateData(d => ({
+          ...d,
+          days: d.days.map(day => day.id !== dayId ? day : {
+            ...day,
+            items: day.items.filter(it => it.id !== itemId),
+          }),
+        }));
+        setConfirm(null);
+        toast("已刪除");
+      },
+    });
+  };
+
+  const handleItemMove = (dayId, itemId, dir) => {
+    updateData(d => ({
+      ...d,
+      days: d.days.map(day => {
+        if (day.id !== dayId) return day;
+        const idx = day.items.findIndex(it => it.id === itemId);
+        if (idx < 0) return day;
+        const newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= day.items.length) return day;
+        const newItems = [...day.items];
+        [newItems[idx], newItems[newIdx]] = [newItems[newIdx], newItems[idx]];
+        return {...day, items: newItems};
+      }),
+    }));
+  };
+
+  const handleItemToggleDone = (dayId, itemId) => {
+    updateData(d => ({
+      ...d,
+      days: d.days.map(day => day.id !== dayId ? day : {
+        ...day,
+        items: day.items.map(it => it.id !== itemId ? it : {...it, done: !it.done}),
+      }),
+    }));
+  };
+
+  const handleItemAdd = (dayId) => {
+    const newItem = {
+      id: uid(),
+      time: "",
+      duration: 60,
+      category: "景點",
+      name: "新行程",
+      notes: "",
+    };
+    updateData(d => ({
+      ...d,
+      days: d.days.map(day => day.id !== dayId ? day : {
+        ...day,
+        items: [...day.items, newItem],
+      }),
+    }));
+    setEditingId(newItem.id);
+    setTimeout(() => {
+      const el = document.querySelector(`[data-item-id="${newItem.id}"]`);
+      if (el) el.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }, 100);
+  };
+
+  const handleHsrUpdate = (newHsr) => {
+    updateData(d => ({...d, hsr: newHsr}));
+    toast("已儲存");
+  };
+
+  const handleExport = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${data.title || 'trip'}_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast("已匯出 JSON");
+  };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (!parsed.days) throw new Error("檔案格式錯誤");
+        setData(parsed);
+        toast("匯入成功");
+      } catch (err) {
+        alert("匯入失敗：" + err.message);
+      }
+    };
+    reader.readAsText(file);
+    if (importRef.current) importRef.current.value = '';
+  };
+
+  const handleReset = () => {
+    setConfirm({
+      title: "重置為預設行程？",
+      body: "目前的編輯內容將會全部消失，且無法復原。建議先匯出 JSON 備份。",
+      danger: true,
+      onConfirm: () => {
+        setData(JSON.parse(JSON.stringify(DEFAULT_DATA)));
+        setConfirm(null);
+        toast("已重置");
+      },
+    });
+  };
+
+  const totalItems = data.days.reduce((sum, d) => sum + d.items.length, 0);
+  const doneItems = data.days.reduce((sum, d) => sum + d.items.filter(i => i.done).length, 0);
+
+  return (
+    <div className="app">
+      <header className="hero">
+        <div className="hero-eyebrow">Kenting · 墾丁旅行手帳</div>
+        {editingTitle ? (
+          <input
+            className="hero-title hero-title-edit"
+            value={data.title}
+            onChange={e => updateData(d => ({...d, title: e.target.value}))}
+            onBlur={() => setEditingTitle(false)}
+            onKeyDown={e => { if (e.key === 'Enter') setEditingTitle(false); }}
+            autoFocus
+          />
+        ) : (
+          <h1 className="hero-title" onClick={() => setEditingTitle(true)} style={{cursor:'text'}}>{data.title}</h1>
+        )}
+        <div className="hero-meta">
+          <span className="hero-meta-item"><Icon.Pin />{data.origin} → 墾丁</span>
+          <span className="hero-meta-item"><Icon.Train />台中 ⇄ 左營</span>
+          <span className="hero-meta-item"><Icon.Check />{doneItems}/{totalItems} 完成</span>
+        </div>
+        <div className="hero-actions">
+          <button className="btn btn-ghost btn-sm" onClick={handleExport}><Icon.Download/> 匯出</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => importRef.current?.click()}><Icon.Upload/> 匯入</button>
+          <button className="btn btn-ghost btn-sm" onClick={handleReset}>重置</button>
+          <input ref={importRef} type="file" accept="application/json,.json" style={{display:'none'}} onChange={handleImport} />
+        </div>
+      </header>
+
+      <HSRCard hsr={data.hsr} onUpdate={handleHsrUpdate} />
+
+      {data.days.map((day, idx) => (
+        <Day
+          key={day.id}
+          day={day}
+          dayIndex={idx}
+          editingId={editingId}
+          onItemEdit={setEditingId}
+          onItemCancelEdit={() => setEditingId(null)}
+          onItemSave={handleItemSave}
+          onItemDelete={handleItemDelete}
+          onItemMove={handleItemMove}
+          onItemToggleDone={handleItemToggleDone}
+          onItemAdd={handleItemAdd}
+          onPhotoClick={setPhotoModal}
+        />
+      ))}
+
+      <div className="footer">
+        全部資料存在這台瀏覽器
+        <span className="footer-divider"></span>
+        建議定期匯出 JSON 備份
+      </div>
+
+      {photoModal && <PhotoModal photos={photoModal.photos} initialIndex={photoModal.index} onClose={() => setPhotoModal(null)} />}
+      {confirm && <ConfirmModal {...confirm} onCancel={() => setConfirm(null)} />}
+      {toastNode}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
