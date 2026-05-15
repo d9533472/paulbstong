@@ -194,6 +194,50 @@
     position: relative;
     z-index: 1;
   }
+
+  /* HERO DATE PICKER */
+  .hero-dates {
+    display: inline-flex; align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 8px 14px;
+    background: rgba(8,145,178,0.07);
+    border: 1px solid var(--ocean-soft);
+    border-radius: 999px;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+  .hero-dates-label {
+    font: 600 10px "JetBrains Mono", monospace;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ocean-deep);
+  }
+  .hero-dates-input {
+    background: transparent;
+    border: none;
+    font: 600 14px "JetBrains Mono", monospace;
+    color: var(--ocean-deep);
+    padding: 0;
+    outline: none;
+    cursor: pointer;
+    min-width: 130px;
+  }
+  .hero-dates-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    filter: invert(28%) sepia(48%) saturate(1850%) hue-rotate(170deg);
+  }
+  .hero-dates-range {
+    font: 500 13px "JetBrains Mono", monospace;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+  .hero-dates-nights {
+    color: var(--ocean-deep);
+    font-weight: 600;
+  }
   .btn {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 8px 14px;
@@ -854,6 +898,39 @@ const formatDuration = (min) => {
   return m ? `${h} 時 ${m} 分` : `${h} 小時`;
 };
 
+// ====================== DATE HELPERS ======================
+const WEEKDAYS_ZH = ['日', '一', '二', '三', '四', '五', '六'];
+const WEEKDAYS_EN = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+function parseDate(s) {
+  if (!s) return null;
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+}
+
+function addDays(dateStr, n) {
+  const d = parseDate(dateStr);
+  if (!d) return '';
+  d.setDate(d.getDate() + n);
+  const y = d.getFullYear();
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const da = String(d.getDate()).padStart(2, '0');
+  return `${y}-${mo}-${da}`;
+}
+
+function fmtMD(dateStr) {
+  const d = parseDate(dateStr);
+  if (!d) return '';
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
+
+function dayInfo(dateStr) {
+  const d = parseDate(dateStr);
+  if (!d) return null;
+  return { zh: WEEKDAYS_ZH[d.getDay()], en: WEEKDAYS_EN[d.getDay()] };
+}
+
 const compressImage = (file, maxWidth = 800) => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.onerror = () => reject(new Error('讀取失敗'));
@@ -898,6 +975,7 @@ const DEFAULT_DATA = {
   title: "墾丁兩天一夜",
   subtitle: "Pingtung Weekend",
   origin: "梧棲勝興豐境",
+  startDate: "",
   hsr: {
     outbound: {
       route: "台中 → 左營",
@@ -954,6 +1032,7 @@ const DEFAULT_DATA = {
         { id: uid(), time: "14:30", duration: 120, category: "景點", name: "恆春古城西門 + 老街", address: "屏東縣恆春鎮", lat: 22.0056, lng: 120.7433, notes: "西門 → 南門 → 東門一圈，搭配恆春老街吃綠豆蒜。\n停車：西門城外公有停車場。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZMFejIBs_UPKFe7CkmqCUvHihM8xYGKI1mptBTdsoG5qkzFt68afxTGrK8J4VizSyg_ZjOBtWYpQ-_wuAp7sY6W7vAchNIFf6Msu65XKdG3D3l0XKtXhngYKP6ytm-9bztHWlEZaFjaXuBtWw=w400"] },
         { id: uid(), time: "17:00", duration: 90, category: "景點", name: "高山巖福德宮（關山日落）", address: "屏東縣恆春鎮砂尾路", lat: 21.9636, lng: 120.7196, notes: "5 月日落約 18:30-18:45。\n17:30 前到才有好位置。\n免門票、免費停車。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZPpP0W_hxXCGh6RaogeGCL9hBOZPVrA3P5-J94VL3kSByqikNRBF1k6wgVEUJKWbPPRGk1wc8xEKsSVOcCfuC75-ULLfnRMTNyfrYWIVSQRVjSA9D29S7nZv4OfYuJT8I57Um76umb7iPXT_g=w400"] },
         { id: uid(), time: "19:00", duration: 150, category: "活動", name: "墾丁大街夜市", address: "屏東縣恆春鎮墾丁路", lat: 21.9456, lng: 120.7964, notes: "推薦：山豬肉香腸、烤魷魚、香蕉煎餅、現切水果。\n停車在墾丁牌樓附近較不會塞。", photos: ["https://lh3.googleusercontent.com/place-photos/AJRVUZMD-OWeCOwu1o-voFmMUH3LFjMw5rkpjRuN2RgQX8JbCo7hU64Q6oLTWkgDN-qfAvhHlnp37XU9K7khWAz0TIjC7y6cM4CNON1svhe4517cxyEZQ6PCqKXtaHyEqbpfZxjB-zsLnCiQMaDE=w400"] },
+        { id: uid(), time: "22:00", duration: 0, category: "住宿", name: "海都旅店（第二晚）", address: "屏東縣恆春鎮墾丁里大灣路118號", lat: 21.9437, lng: 120.7986, notes: "連住第二晚。\n墾丁大街旁邊，回飯店超快。" },
       ],
     },
     {
@@ -997,6 +1076,7 @@ function buildPhotoMap() {
 function ensureSchema(data) {
   if (!data) return data;
   if (!data.rental) data.rental = JSON.parse(JSON.stringify(DEFAULT_DATA.rental));
+  if (data.startDate === undefined) data.startDate = "";
   if (data.hsr) {
     ['outbound', 'inbound'].forEach(k => {
       if (data.hsr[k]) {
@@ -1538,15 +1618,18 @@ function RentalCard({ rental, onUpdate }) {
 }
 
 // ====================== DAY ======================
-function Day({ day, dayIndex, editingId, onItemEdit, onItemCancelEdit, onItemSave, onItemDelete, onItemMove, onItemToggleDone, onItemAdd, onPhotoClick }) {
+function Day({ day, dayIndex, startDate, editingId, onItemEdit, onItemCancelEdit, onItemSave, onItemDelete, onItemMove, onItemToggleDone, onItemAdd, onPhotoClick }) {
   const dayAccents = ['#0891B2', '#059669', '#0D9488', '#06B6D4', '#65A30D'];
   const accent = dayAccents[dayIndex % dayAccents.length];
+  const dayDate = startDate ? addDays(startDate, dayIndex) : '';
+  const info = dayDate ? dayInfo(dayDate) : null;
+  const labelText = info ? `${fmtMD(dayDate)} · ${info.en} 週${info.zh}` : day.label;
   return (
     <div className="day" style={{'--day-accent': accent}}>
       <div className="day-header">
         <div className="day-num">{['I','II','III','IV','V'][dayIndex] || (dayIndex+1)}</div>
         <div className="day-meta">
-          <div className="day-label">{day.label}</div>
+          <div className="day-label">{labelText}</div>
           <h2 className="day-title">{day.title}</h2>
         </div>
       </div>
@@ -1822,6 +1905,21 @@ function App() {
               '本機模式'}
           </span>
         </div>
+        <div className="hero-dates">
+          <label className="hero-dates-label">出發日</label>
+          <input
+            type="date"
+            className="hero-dates-input"
+            value={data.startDate || ''}
+            onChange={e => updateData(d => ({...d, startDate: e.target.value}))}
+          />
+          {data.startDate && data.days.length > 1 && (
+            <span className="hero-dates-range">
+              ~ {fmtMD(addDays(data.startDate, data.days.length - 1))} ({dayInfo(addDays(data.startDate, data.days.length - 1))?.zh})
+              <span className="hero-dates-nights"> · {data.days.length - 1} 夜</span>
+            </span>
+          )}
+        </div>
         <div className="hero-actions">
           {CLOUD_ENABLED && <button className="btn btn-ghost btn-sm" onClick={refreshFromCloud} disabled={syncStatus === 'loading'}>重新整理</button>}
           <button className="btn btn-ghost btn-sm" onClick={handleExport}><Icon.Download/> 匯出</button>
@@ -1839,6 +1937,7 @@ function App() {
           key={day.id}
           day={day}
           dayIndex={idx}
+          startDate={data.startDate}
           editingId={editingId}
           onItemEdit={setEditingId}
           onItemCancelEdit={() => setEditingId(null)}
