@@ -160,6 +160,35 @@
     font-weight: 500;
   }
   .hero-meta-item svg { color: var(--ocean); flex-shrink: 0; }
+
+  /* SYNC STATUS PILL */
+  .sync-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font: 500 11px "JetBrains Mono", monospace;
+    letter-spacing: 0.04em;
+    color: var(--ink-soft);
+    background: var(--paper);
+    transition: all 0.15s;
+  }
+  .sync-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--ink-mute);
+    flex-shrink: 0;
+  }
+  .sync-synced { color: var(--palm-deep); border-color: var(--palm-soft); background: rgba(110,231,183,0.15); }
+  .sync-synced .sync-dot { background: var(--palm); box-shadow: 0 0 0 3px rgba(5,150,105,0.18); }
+  .sync-saving { color: var(--ocean-deep); border-color: var(--ocean-soft); background: rgba(103,232,249,0.15); }
+  .sync-saving .sync-dot { background: var(--ocean); animation: pulse 1s infinite; }
+  .sync-loading { color: var(--ocean-deep); border-color: var(--ocean-soft); background: rgba(103,232,249,0.15); }
+  .sync-loading .sync-dot { background: var(--ocean); animation: pulse 1s infinite; }
+  .sync-error { color: var(--coral); border-color: var(--coral); background: rgba(249,115,22,0.1); cursor: pointer; }
+  .sync-error .sync-dot { background: var(--coral); }
+  .sync-local { color: var(--ink-mute); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
   .hero-actions {
     display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px;
     position: relative;
@@ -943,6 +972,11 @@ const DEFAULT_DATA = {
   ],
 };
 
+// ====================== CLOUD SYNC ======================
+// 部署 code.gs 後把 Web App URL 貼到下面
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx9aw_lcqNKTXPUHTQXEJqbtyjjhTVPGghUvPFDCI5m2iQAyGYpgm10FleVvis0avGf7Q/exec";
+const CLOUD_ENABLED = !!(GAS_URL && GAS_URL.startsWith("https://"));
+
 const STORAGE_KEY = "kenting_trip_v2";
 const OLD_STORAGE_KEYS = ["kenting_trip_v1"];
 
@@ -984,7 +1018,6 @@ function migrateFromOldKey() {
       if (!raw) continue;
       const parsed = JSON.parse(raw);
       if (!parsed || !parsed.days) continue;
-      // Enrich items missing photos with defaults if name matches
       parsed.days.forEach(day => {
         day.items.forEach(item => {
           if ((!item.photos || item.photos.length === 0) && photoMap[item.name]) {
@@ -1000,7 +1033,8 @@ function migrateFromOldKey() {
   return null;
 }
 
-function loadData() {
+// LOCAL cache (used as offline fallback + initial paint)
+function loadLocalCache() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -1009,18 +1043,70 @@ function loadData() {
     }
     const migrated = migrateFromOldKey();
     if (migrated) return migrated;
-  } catch (e) { console.warn("load failed", e); }
+  } catch (e) { console.warn("local load failed", e); }
   return DEFAULT_DATA;
 }
 
-function saveData(data) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    return true;
-  } catch (e) {
-    console.error("save failed", e);
-    return false;
-  }
+function saveLocalCache(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return true; }
+  catch (e) { console.error("local save failed", e); return false; }
+}
+
+// CLOUD API — XMLHttpRequest (mobile Safari compat), text/plain (no CORS preflight)
+function cloudGet() {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", GAS_URL + "?_=" + Date.now(), true);
+    xhr.timeout = 15000;
+    xhr.onload = function() {
+      try {
+        const resp = JSON.parse(xhr.responseText);
+        if (resp.ok) resolve(resp.data);
+        else reject(new Error(resp.error || "unknown"));
+      } catch (e) { reject(new Error("解析失敗：" + xhr.responseText.slice(0, 80))); }
+    };
+    xhr.onerror = () => reject(new Error("網路錯誤"));
+    xhr.ontimeout = () => reject(new Error("逾時"));
+    xhr.send();
+  });
+}
+
+function cloudSet(data) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", GAS_URL, true);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+    xhr.timeout = 20000;
+    xhr.onload = function() {
+      try {
+        const resp = JSON.parse(xhr.responseText);
+        if (resp.ok) resolve(resp);
+        else reject(new Error(resp.error || "save failed"));
+      } catch (e) { reject(new Error("解析失敗")); }
+    };
+    xhr.onerror = () => reject(new Error("網路錯誤"));
+    xhr.ontimeout = () => reject(new Error("逾時"));
+    xhr.send(JSON.stringify({action: "set", data: data}));
+  });
+}
+
+function cloudUploadPhoto(dataUrl, filename) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", GAS_URL, true);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=utf-8");
+    xhr.timeout = 30000;
+    xhr.onload = function() {
+      try {
+        const resp = JSON.parse(xhr.responseText);
+        if (resp.ok && resp.url) resolve(resp.url);
+        else reject(new Error(resp.error || "upload failed"));
+      } catch (e) { reject(new Error("解析失敗")); }
+    };
+    xhr.onerror = () => reject(new Error("網路錯誤"));
+    xhr.ontimeout = () => reject(new Error("逾時"));
+    xhr.send(JSON.stringify({action: "uploadPhoto", dataUrl: dataUrl, filename: filename || ""}));
+  });
 }
 
 // ====================== TOAST ======================
@@ -1083,20 +1169,33 @@ function ItemEditForm({ item, onSave, onCancel, onAddPhoto, onRemovePhoto, onPas
   const [draft, setDraft] = useState({...item});
   const fileRef = useRef(null);
   const [urlInput, setUrlInput] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   const update = (k, v) => setDraft(d => ({...d, [k]: v}));
 
   const handleFile = async (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+    setUploading(true);
     for (const f of files) {
       try {
         const dataUrl = await compressImage(f, 900);
-        setDraft(d => ({...d, photos: [...(d.photos||[]), dataUrl]}));
+        if (CLOUD_ENABLED) {
+          try {
+            const cloudUrl = await cloudUploadPhoto(dataUrl, f.name);
+            setDraft(d => ({...d, photos: [...(d.photos||[]), cloudUrl]}));
+          } catch (cloudErr) {
+            console.warn("cloud upload failed, using local base64", cloudErr);
+            setDraft(d => ({...d, photos: [...(d.photos||[]), dataUrl]}));
+          }
+        } else {
+          setDraft(d => ({...d, photos: [...(d.photos||[]), dataUrl]}));
+        }
       } catch (err) {
         alert('照片處理失敗：' + err.message);
       }
     }
+    setUploading(false);
     if (fileRef.current) fileRef.current.value = '';
   };
 
@@ -1180,9 +1279,9 @@ function ItemEditForm({ item, onSave, onCancel, onAddPhoto, onRemovePhoto, onPas
               <button className="photo-remove" onClick={() => removePhoto(i)} aria-label="移除">×</button>
             </div>
           ))}
-          <label className="upload-btn" title="上傳照片">
-            <Icon.Camera />
-            <input ref={fileRef} type="file" accept="image/*" multiple style={{display:'none'}} onChange={handleFile} />
+          <label className="upload-btn" title={uploading ? "上傳中..." : "上傳照片"} style={uploading ? {opacity: 0.6, cursor: 'wait'} : null}>
+            {uploading ? <span className="mono" style={{fontSize: 11}}>上傳中</span> : <Icon.Camera />}
+            <input ref={fileRef} type="file" accept="image/*" multiple style={{display:'none'}} onChange={handleFile} disabled={uploading} />
           </label>
         </div>
         <div style={{display:'flex', gap:6, marginTop:8}}>
@@ -1478,7 +1577,7 @@ function Day({ day, dayIndex, editingId, onItemEdit, onItemCancelEdit, onItemSav
 
 // ====================== APP ======================
 function App() {
-  const [data, setData] = useState(loadData);
+  const [data, setData] = useState(loadLocalCache);
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [photoModal, setPhotoModal] = useState(null);
@@ -1486,9 +1585,69 @@ function App() {
   const [toast, toastNode] = useToast();
   const importRef = useRef(null);
 
+  // sync states: 'init' (just loaded cache), 'loading' (fetching cloud), 'synced', 'saving', 'error', 'local'
+  const [syncStatus, setSyncStatus] = useState(CLOUD_ENABLED ? 'loading' : 'local');
+  const [syncMsg, setSyncMsg] = useState("");
+  const saveTimer = useRef(null);
+  const skipNextSave = useRef(false);
+
+  // Fetch from cloud on mount
   useEffect(() => {
-    saveData(data);
+    if (!CLOUD_ENABLED) return;
+    let cancelled = false;
+    cloudGet()
+      .then(cloudData => {
+        if (cancelled) return;
+        if (cloudData && cloudData.days) {
+          skipNextSave.current = true; // don't echo cloud data back
+          setData(ensureSchema(cloudData));
+        }
+        setSyncStatus('synced');
+        setSyncMsg("");
+      })
+      .catch(err => {
+        if (cancelled) return;
+        console.warn("cloud load failed", err);
+        setSyncStatus('error');
+        setSyncMsg(err.message || "雲端載入失敗");
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  // Save: always update local cache; debounce cloud save
+  useEffect(() => {
+    saveLocalCache(data);
+    if (!CLOUD_ENABLED) return;
+    if (skipNextSave.current) { skipNextSave.current = false; return; }
+    if (syncStatus === 'loading') return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    setSyncStatus('saving');
+    saveTimer.current = setTimeout(() => {
+      cloudSet(data)
+        .then(() => { setSyncStatus('synced'); setSyncMsg(""); })
+        .catch(err => { setSyncStatus('error'); setSyncMsg(err.message || "儲存失敗"); });
+    }, 1500);
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current); };
   }, [data]);
+
+  const refreshFromCloud = () => {
+    if (!CLOUD_ENABLED) return;
+    setSyncStatus('loading');
+    cloudGet()
+      .then(cloudData => {
+        if (cloudData && cloudData.days) {
+          skipNextSave.current = true;
+          setData(ensureSchema(cloudData));
+        }
+        setSyncStatus('synced');
+        setSyncMsg("");
+        toast("已重新整理");
+      })
+      .catch(err => {
+        setSyncStatus('error');
+        setSyncMsg(err.message || "讀取失敗");
+      });
+  };
 
   const updateData = useCallback((updater) => {
     setData(d => typeof updater === 'function' ? updater(d) : updater);
@@ -1618,7 +1777,9 @@ function App() {
   const handleReset = () => {
     setConfirm({
       title: "重置為預設行程？",
-      body: "目前的編輯內容將會全部消失，且無法復原。建議先匯出 JSON 備份。",
+      body: CLOUD_ENABLED
+        ? "雲端資料會被覆蓋成預設行程，所有看這個網址的人都會跟著重置。建議先匯出 JSON 備份。"
+        : "目前的編輯內容將會全部消失，且無法復原。建議先匯出 JSON 備份。",
       danger: true,
       onConfirm: () => {
         setData(JSON.parse(JSON.stringify(DEFAULT_DATA)));
@@ -1651,8 +1812,18 @@ function App() {
           <span className="hero-meta-item"><Icon.Pin />{data.origin} → 墾丁</span>
           <span className="hero-meta-item"><Icon.Train />台中 ⇄ 左營</span>
           <span className="hero-meta-item"><Icon.Check />{doneItems}/{totalItems} 完成</span>
+          <span className={`sync-pill sync-${syncStatus}`} title={syncMsg} onClick={refreshFromCloud} style={{cursor: CLOUD_ENABLED ? 'pointer' : 'default'}}>
+            <span className="sync-dot"></span>
+            {!CLOUD_ENABLED ? '本機模式' :
+              syncStatus === 'loading' ? '載入雲端...' :
+              syncStatus === 'saving' ? '同步中...' :
+              syncStatus === 'synced' ? '已同步' :
+              syncStatus === 'error' ? '同步失敗（點重試）' :
+              '本機模式'}
+          </span>
         </div>
         <div className="hero-actions">
+          {CLOUD_ENABLED && <button className="btn btn-ghost btn-sm" onClick={refreshFromCloud} disabled={syncStatus === 'loading'}>重新整理</button>}
           <button className="btn btn-ghost btn-sm" onClick={handleExport}><Icon.Download/> 匯出</button>
           <button className="btn btn-ghost btn-sm" onClick={() => importRef.current?.click()}><Icon.Upload/> 匯入</button>
           <button className="btn btn-ghost btn-sm" onClick={handleReset}>重置</button>
