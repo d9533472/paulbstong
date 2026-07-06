@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聚餐投票 — 今天吃哪家?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f3ec; --paper:#fffdf9; --ink:#221e19; --muted:#8b8175;
+    --gold:#b08d57; --gold-lt:#e6d9c3; --red:#a63c2c; --green:#3a7d44;
+    --line:#eae2d4;
+    --shadow:0 10px 40px rgba(50,40,25,.10);
+    --serif:"Noto Serif TC",serif; --sans:"Noto Sans TC",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.75}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 90px}
+
+  /* ---------- 頂部 ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(247,243,236,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .topbar-in{max-width:960px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .brand{font-family:var(--serif);font-weight:900;font-size:1.05rem;letter-spacing:.08em}
+  .to-results{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#f5efe4;text-decoration:none;border-radius:999px;padding:7px 18px;font-size:.85rem;font-weight:700;transition:background .2s}
+  .to-results:hover{background:var(--red)}
+  .to-results .n{background:var(--gold);color:#fff;border-radius:999px;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;padding:0 6px}
+
+  header.hero-head{text-align:center;padding:64px 0 30px}
+  .hero-head .kicker{color:var(--gold);letter-spacing:.5em;font-size:.78rem;font-weight:700;text-indent:.5em}
+  .hero-head h1{font-family:var(--serif);font-weight:900;font-size:clamp(1.9rem,5vw,2.8rem);margin:10px 0 8px}
+  .hero-head p{color:var(--muted)}
+  .hero-head .rule{width:64px;height:3px;background:var(--gold);margin:22px auto 0;border-radius:3px}
+  .badge{display:inline-block;margin-top:16px;border:1px solid var(--gold-lt);background:#fff;color:var(--gold);border-radius:999px;padding:3px 16px;font-size:.82rem}
+
+  .demo-note{background:#fdf6e3;border:1px solid #eeddb0;border-radius:14px;padding:12px 18px;font-size:.85rem;color:#8a6d1a;margin:18px 0}
+
+  /* ---------- 姓名 ---------- */
+  .namebox{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:20px 24px;margin:26px 0 40px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .namebox label{font-family:var(--serif);font-weight:700;white-space:nowrap}
+  .namebox input{flex:1;min-width:200px;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:11px 16px;font-size:1rem;outline:none;transition:border .2s}
+  .namebox input:focus{border-color:var(--gold)}
+  .namebox .hint{width:100%;font-size:.8rem;color:var(--muted)}
+
+  /* ---------- 店家(一家一欄) ---------- */
+  .shop{background:var(--paper);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:44px}
+  .shop-head{display:flex;align-items:baseline;gap:14px;padding:26px 30px 0;flex-wrap:wrap}
+  .shop-no{font-family:var(--serif);font-weight:900;font-size:2rem;color:var(--gold-lt);line-height:1}
+  .shop-head h2{font-family:var(--serif);font-weight:900;font-size:clamp(1.25rem,3vw,1.6rem)}
+  .shop-tag{border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:1px 12px;font-size:.75rem;font-weight:700;letter-spacing:.1em}
+  .shop-intro{padding:10px 30px 0;color:#5c554b;font-size:.93rem;max-width:72ch}
+  .shop-meta{display:flex;flex-wrap:wrap;gap:6px 26px;padding:14px 30px 0;font-size:.86rem;color:#5c554b}
+  .shop-meta a{color:var(--red);text-decoration:none;border-bottom:1px dotted var(--red)}
+  .rating-line{padding-top:12px}
+  .grating{display:inline-flex;align-items:center;gap:5px;background:#fdf8ee;border:1px solid var(--gold-lt);border-radius:999px;padding:3px 14px;font-size:.88rem}
+  .grating .star{color:#f5a623;font-size:1rem}
+  .grating b{font-size:1rem}
+  .grating a{color:var(--muted);border-bottom:1px dotted var(--muted);font-size:.8rem}
+
+  .gal-label{padding:20px 30px 8px;font-size:.8rem;font-weight:700;letter-spacing:.35em;color:var(--gold);text-indent:.05em}
+  .gal{display:grid;gap:8px;padding:0 30px}
+  .gal.env{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .gal.menu{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+  .gal figure{position:relative;border-radius:12px;overflow:hidden;cursor:zoom-in;aspect-ratio:4/3;background:#efe8db}
+  .gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+  .gal figure:hover img{transform:scale(1.06)}
+  .gal figcaption{position:absolute;inset:auto 0 0 0;background:linear-gradient(transparent,rgba(20,15,8,.72));color:#fff;font-size:.72rem;padding:16px 8px 5px;text-align:center;opacity:0;transition:opacity .25s}
+  .gal figure:hover figcaption{opacity:1}
+  .gal .broken{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.78rem;cursor:default}
+  .credit{padding:6px 30px 0;font-size:.72rem;color:#b3a996}
+  .credit a{color:inherit}
+
+  .shop-foot{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:18px 30px 26px;margin-top:8px;border-top:1px dashed var(--line)}
+  .dish-chips{flex:1;min-width:220px;font-size:.82rem}
+  .dish-chips b{color:var(--gold);letter-spacing:.2em;font-size:.76rem;display:block;margin-bottom:4px}
+  .dish-chips span{display:inline-block;background:#f4eee2;border:1px solid var(--line);border-radius:999px;padding:1px 12px;margin:2px 4px 2px 0}
+  .voters-inline{width:100%;font-size:.8rem;color:var(--muted)}
+  .voters-inline .chip{display:inline-block;background:#eef6ee;color:var(--green);border-radius:999px;padding:0 10px;margin:2px 3px 0 0;font-size:.78rem}
+  .vote-btn{border:none;border-radius:999px;padding:13px 34px;font-size:1rem;font-weight:700;font-family:var(--serif);color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--red),#c9703a);box-shadow:0 6px 18px rgba(166,60,44,.3);transition:transform .12s,opacity .2s}
+  .vote-btn:hover{opacity:.92}
+  .vote-btn:active{transform:scale(.97)}
+  .vote-btn.voted{background:var(--green);box-shadow:0 6px 18px rgba(58,125,68,.3)}
+  .vote-btn:disabled{background:#cfc8bc;box-shadow:none;cursor:not-allowed}
+
+  /* ---------- 結果(頁尾) ---------- */
+  .results{background:var(--ink);color:#f2ecdf;border-radius:24px;padding:40px 34px;margin-top:60px;scroll-margin-top:80px}
+  .results .kicker{color:var(--gold);letter-spacing:.4em;font-size:.76rem;font-weight:700}
+  .results h2{font-family:var(--serif);font-weight:900;font-size:1.6rem;margin:6px 0 2px}
+  .results .sub{color:#a89c8a;font-size:.84rem;margin-bottom:24px}
+  .bar-row{display:grid;grid-template-columns:170px 1fr 52px;align-items:center;gap:12px;margin:14px 0}
+  .bar-row .name{font-size:.9rem;font-weight:700;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-track{background:#3a352d;border-radius:999px;height:24px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:999px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#fff;font-size:.74rem;background:linear-gradient(90deg,var(--gold),#d4b47e)}
+  .bar-row.lead .bar-fill{background:linear-gradient(90deg,var(--red),#d4703a)}
+  .bar-row .cnt{font-weight:700}
+  .bar-row.lead .name,.bar-row.lead .cnt{color:#f0c987}
+  .total-line{margin-top:20px;font-size:.86rem;color:#a89c8a;border-top:1px dashed #4a443a;padding-top:16px}
+  .roster{margin-top:26px}
+  .roster h3{font-family:var(--serif);font-size:1.05rem;margin-bottom:12px;color:#e8ddc9}
+  .roster-group{margin-bottom:12px;font-size:.86rem}
+  .roster-group .gname{font-weight:700;color:#d4b47e}
+  .roster-group .chip{display:inline-block;background:#3a352d;border-radius:999px;padding:2px 12px;margin:3px 4px 0 0;font-size:.8rem}
+  .empty{color:#a89c8a;font-size:.86rem}
+  .back-top{display:inline-block;margin-top:22px;color:#d4b47e;text-decoration:none;font-size:.84rem;border-bottom:1px dotted #d4b47e}
+
+  /* ---------- Lightbox ---------- */
+  #lb{position:fixed;inset:0;background:rgba(15,12,8,.94);z-index:100;display:none;align-items:center;justify-content:center;flex-direction:column}
+  #lb.open{display:flex}
+  #lb img{max-width:92vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 80px rgba(0,0,0,.6)}
+  #lb .cap{color:#e8ddc9;margin-top:14px;font-size:.9rem}
+  #lb .x{position:absolute;top:18px;right:24px;color:#fff;font-size:2rem;cursor:pointer;line-height:1;background:none;border:none}
+  #lb .nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1.6rem;width:48px;height:48px;border-radius:50%;cursor:pointer;transition:background .2s}
+  #lb .nav:hover{background:rgba(255,255,255,.28)}
+  #lb .prev{left:16px} #lb .next{right:16px}
+
+  #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--ink);color:#fff;padding:13px 26px;border-radius:999px;font-size:.9rem;opacity:0;transition:all .35s;z-index:110;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  footer{text-align:center;color:#b3a996;font-size:.75rem;margin-top:50px}
+  @media(max-width:600px){
+    .shop-head,.shop-intro,.shop-meta,.gal,.gal-label,.shop-foot,.credit{padding-left:18px;padding-right:18px}
+    .bar-row{grid-template-columns:100px 1fr 42px}
+    .bar-row .name{font-size:.76rem}
+    .results{padding:28px 20px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand">🍜 聚餐投票</div>
+    <a class="to-results" href="#results">📊 查看目前投票結果 <span class="n" id="topCount">0</span></a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero-head">
+    <div class="kicker">TAICHUNG · 聚餐口袋名單</div>
+    <h1>今天,吃哪一家?</h1>
+    <p>四家口袋名單一次看:環境、菜單、招牌菜 —— 投下你神聖的一票</p>
+    <div class="rule"></div><br>
+    <span class="badge" id="statusBadge">連線中…</span>
+  </header>
+
+  <div class="demo-note" id="demoNote" style="display:none">
+    ⚠️ 目前為<b>單機試用模式</b>(票只存在這台裝置)。要多人跨裝置共同投票,請照「部署說明」設定 Google Sheets 後端並填入 <code>API_URL</code>。
+  </div>
+
+  <div class="namebox">
+    <label for="voterName">👤 你的姓名</label>
+    <input id="voterName" type="text" maxlength="20" placeholder="請先輸入姓名,再到店家投票">
+    <div class="hint">同一個名字重複投票會「改票」,不會重複計算。投完可到<a href="#results" style="color:var(--red)">頁尾看結果</a>。</div>
+  </div>
+
+  <div id="shops"></div>
+
+  <!-- ===== 投票結果(頁尾) ===== -->
+  <section class="results" id="results">
+    <div class="kicker">LIVE RESULTS</div>
+    <h2>📊 目前投票結果</h2>
+    <div class="sub">即時更新 · 每 30 秒自動刷新</div>
+    <div id="bars"></div>
+    <div class="total-line" id="totalLine">尚無人投票,快來搶頭香!</div>
+    <div class="roster">
+      <h3>🗳️ 誰投了哪一家</h3>
+      <div id="rosterBody"><div class="empty">還沒有人投票。</div></div>
+    </div>
+    <a class="back-top" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ 回到頂部繼續投票</a>
+  </section>
+
+  <footer>店家資訊與照片整理自公開食記部落格與店家官網,版權屬原作者 · Google 評分為 2026/07 查詢結果,最新以 Google Maps 為準</footer>
+</div>
+
+<!-- Lightbox -->
+<div id="lb">
+  <button class="x" onclick="lbClose()">✕</button>
+  <button class="nav prev" onclick="lbStep(-1)">‹</button>
+  <img id="lbImg" src="" alt="">
+  <button class="nav next" onclick="lbStep(1)">›</button>
+  <div class="cap" id="lbCap"></div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================================================================
+   設定:部署好 Google Apps Script 後,把 Web App 網址貼在下面。
+   留空 = 單機試用模式(localStorage,僅本裝置可見)。
+   ================================================================ */
+const API_URL = "https://script.google.com/macros/s/AKfycbynW7v6xaaGM4zgTZuX10Ka9Wheeb8153uUYYwIwgXx67J7ULsO6UfWStiAURleeAsN/exec";
+
+/* ---------------- 店家資料 ---------------- */
+const SHOPS = [
+  {
+    id:"fuxing",
+    name:"復興餐廳",
+    tag:"眷村菜 · 60年老店",
+    intro:"清泉崗旁營業超過一甲子的眷村老味道,第二代接手傳承,保留客人手寫菜單的傳統。合菜 CP 值超高(有 5 人、10 人兩種),假日人潮多、單點只能現場排隊,建議提早到。",
+    addr:"台中市大雅區月祥路301號",
+    tel:"04-2566-4161",
+    hours:"11:15–13:30 / 17:15–20:00(週一公休)",
+    gmap:{score:"4.3",count:"3,517",price:"$400–600"},
+    menu:["香酥鴨(限量)","酥炸肥腸","北方蔥油餅","開陽白菜","回鍋肉"],
+    creditName:"剎有其食", creditUrl:"https://safood.tw/fuxing",
+    env:[
+      {u:"https://safood.tw/wp-content/uploads/20221012211110_44.jpg",c:"店面外觀"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211146_80.jpg",c:"店內環境"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211148_44.jpg",c:"大圓桌"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211223_53.jpg",c:"香酥鴨"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211208_32.jpg",c:"酥炸肥腸"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211202_59.jpg",c:"北方蔥油餅"}
+    ],
+    menuImgs:[
+      {u:"https://safood.tw/wp-content/uploads/20221012211241_7.jpg",c:"平日菜單"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211247_37.jpg",c:"假日菜單"},
+      {u:"https://safood.tw/wp-content/uploads/20221012211244_82.jpg",c:"合菜菜單(5人/10人)"}
+    ]
+  },
+  {
+    id:"fenghe",
+    name:"丰禾 台味風格料理 文心崇德店",
+    tag:"經典台菜 · 王品集團",
+    intro:"王品集團旗下台菜品牌,主打家鄉手路菜、傳統辦桌菜與道地酒家菜。橘色調搭配台灣經典窗花的清新裝潢,捷運崇德文心站走路 3 分鐘,個人套餐到多人桌菜都有,聚餐超方便。",
+    addr:"台中市北屯區文心路四段595號1樓",
+    tel:"04-2249-0007",
+    hours:"11:00–14:30 / 17:30–22:00",
+    gmap:{score:"4.8",count:"10,330",price:"$400–600"},
+    menu:["丰禾起家雞","糖醋鱸魚","古早味滷豬腳","酒香四杯雞","雪濃酸魚湯"],
+    creditName:"強生與小吠的Hyper人蔘", creditUrl:"https://2hyperlife.com/fenghe/",
+    env:[
+      {u:"https://live.staticflickr.com/65535/51742394455_0fe5d80f72_c.jpg",c:"店面外觀"},
+      {u:"https://live.staticflickr.com/65535/51740684592_4fb34692c6_c.jpg",c:"店內用餐環境"},
+      {u:"https://live.staticflickr.com/65535/51742151589_88022b36d7_c.jpg",c:"窗花設計座位區"},
+      {u:"https://live.staticflickr.com/65535/51742394085_d97a663484_c.jpg",c:"古早味滷豬腳"},
+      {u:"https://live.staticflickr.com/65535/53548901911_51d919c3a3_c.jpg",c:"雪濃酸魚湯"}
+    ],
+    menuImgs:[
+      {u:"https://www.veggtable.com/photo_room/1782352002624.jpg",c:"官方菜單 1"},
+      {u:"https://www.veggtable.com/photo_room/1782352002626.jpg",c:"官方菜單 2"},
+      {u:"https://www.veggtable.com/photo_room/1782352002627-2.jpg",c:"官方菜單 3"},
+      {u:"https://www.veggtable.com/photo_room/1782352002627-1.jpg",c:"官方菜單 4"},
+      {u:"https://www.veggtable.com/photo_room/1782352002627.jpg",c:"官方菜單 5"},
+      {u:"https://www.veggtable.com/photo_room/1782352024676.jpg",c:"官方菜單 6"},
+      {u:"https://www.veggtable.com/photo_room/1782352024678-1.jpg",c:"官方菜單 7"},
+      {u:"https://www.veggtable.com/photo_room/1782352024678.jpg",c:"官方菜單 8"},
+      {u:"https://www.veggtable.com/photo_room/1782352024679.jpg",c:"官方菜單 9"},
+      {u:"https://www.veggtable.com/photo_room/1782352039437.jpg",c:"官方菜單 10"},
+      {u:"https://www.veggtable.com/photo_room/1782352039438-1.jpg",c:"官方菜單 11"},
+      {u:"https://www.veggtable.com/photo_room/1782352039438.jpg",c:"官方菜單 12"}
+    ]
+  },
+  {
+    id:"choicemeal",
+    name:"厝秘 功夫菜‧手路湯 甘肅店",
+    tag:"功夫菜 · 日式老宅",
+    intro:"日式老倉庫以「守舊如新」概念翻新的秘境台菜,Google 4.6 星高評價。挑高採光、清奢典雅,備有包廂圓桌與投影機,近水湳中央公園;對面易鼎活蝦停車場可免費停車(結帳記得領代幣)。",
+    addr:"台中市西屯區甘肅路二段115號",
+    tel:"04-2311-9986",
+    hours:"11:30–14:30 / 17:00–21:30(週二公休)",
+    gmap:{score:"4.6",count:"3,176",price:"$400–800"},
+    menu:["芋頭香酥鴨(限量)","酸菜燉鴨湯","蘇杭東坡肉+巧巴達","家鄉砂鍋菜飯","蔥薑廣島蚵"],
+    creditName:"Nini and Blue 玩樂食記", creditUrl:"https://niniandblue.com/blog/post/choice",
+    env:[
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52162371986_43f482ab72_b.jpg",c:"老宅外觀"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52162611189_7718ddc781_b.jpg",c:"庭院小徑"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52162372903_a735e67423_b.jpg",c:"一樓挑高用餐區"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52162371831_1b82caec84_b.jpg",c:"二樓包廂空間"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52161349497_a4caee237a_b.jpg",c:"蘇杭東坡肉"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52161349537_4fe3aff9d9_b.jpg",c:"酸菜燉鴨湯"}
+    ],
+    menuImgs:[
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE01.jpg",c:"老饕推薦"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE04.jpg",c:"私房手路菜 1"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE05.jpg",c:"私房手路菜 2"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE06.jpg",c:"私房手路菜 3"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE07.jpg",c:"功夫菜餚 1"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE08.jpg",c:"功夫菜餚 2"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE09.jpg",c:"功夫菜餚 3"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE10.jpg",c:"蝦蟹魚海味 1"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE13.jpg",c:"蝦蟹魚海味 2"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE14.jpg",c:"經典湯品 1"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE15.jpg",c:"經典湯品 2"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE20.jpg",c:"米食與飲品 1"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE21.jpg",c:"米食與飲品 2"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE24.jpg",c:"厝秘桌菜 1"},
+      {u:"https://niniandblue.com/wp-content/uploads/2026/03/%E5%8E%9D%E7%A7%98%E8%8F%9C%E5%96%AE25.jpg",c:"厝秘桌菜 2"}
+    ]
+  },
+  {
+    id:"honglongyan",
+    name:"鴻龍宴 x 活蝦料理",
+    tag:"活蝦 · 大船進港",
+    intro:"整艘大船開進餐廳的超浮誇打卡名店!現點現撈泰國活蝦 12 種口味,粵式台式創意菜兼備。近中清交流道、門口好停車,有包廂,用餐限時 2 小時、收一成服務費,均消約 $500。",
+    addr:"台中市北屯區經貿五路67號",
+    tel:"04-2426-2061",
+    hours:"12:00–21:00(建議先電話訂位)",
+    gmap:{score:"4.6",count:"3,126",price:"$400–800"},
+    menu:["經典胡椒蝦","金縷泡菜蝦","梅汁佐鮮蝦","梅香焗子排","金沙焗中卷"],
+    creditName:"Nini and Blue 玩樂食記", creditUrl:"https://niniandblue.com/blog/post/honglongyan2022",
+    env:[
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52343539860_88fd5fb6db_b.jpg",c:"大船造景"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52343414444_25678b41cb_b.jpg",c:"挑高大船用餐區"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/50358267742_b0355acc94_b.jpg",c:"船艙現撈活蝦"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52342157132_17de68f3af_b.jpg",c:"二樓空間"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52343413819_b114016c63_b.jpg",c:"金縷泡菜蝦"},
+      {u:"https://niniandblue.com/wp-content/uploads/flickr/52343538535_f37b1ee036_b.jpg",c:"梅香焗子排"}
+    ],
+    menuImgs:[
+      {u:"https://pic.pimg.tw/niniblue/1697117841-352133085-g_l.jpg",c:"菜單總覽"},
+      {u:"https://pic.pimg.tw/niniblue/1689743637-4249582761-g_l.jpg",c:"單點菜單 1"},
+      {u:"https://pic.pimg.tw/niniblue/1689743637-517094328-g_l.jpg",c:"單點菜單 2"},
+      {u:"https://pic.pimg.tw/niniblue/1697117841-353433800-g.png",c:"全蝦宴(2–4人)"},
+      {u:"https://pic.pimg.tw/niniblue/1689743637-2080129793-g_l.jpg",c:"多人套餐 1"},
+      {u:"https://pic.pimg.tw/niniblue/1689743637-3453726836-g.jpg",c:"多人套餐 2"}
+    ]
+  }
+];
+
+/* ---------------- 狀態 ---------------- */
+let votes = [];
+const $ = id => document.getElementById(id);
+const isDemo = !API_URL;
+
+/* ---------------- 資料層 ---------------- */
+async function loadVotes(){
+  if(isDemo){
+    try{ votes = JSON.parse(localStorage.getItem("lunchVotes")||"[]"); }catch(e){ votes=[]; }
+    return;
+  }
+  const res = await fetch(API_URL, {method:"GET"});
+  const data = await res.json();
+  votes = data.votes || [];
+}
+async function submitVote(name, shopId){
+  if(isDemo){
+    votes = votes.filter(v => v.name !== name);
+    votes.push({name, shopId, ts:Date.now()});
+    localStorage.setItem("lunchVotes", JSON.stringify(votes));
+    return {ok:true};
+  }
+  const res = await fetch(API_URL, {
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"}, // 避免 CORS preflight
+    body: JSON.stringify({name, shopId})
+  });
+  return res.json();
+}
+
+/* ---------------- 工具 ---------------- */
+function esc(str){ return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function shopById(id){ return SHOPS.find(s=>s.id===id); }
+function votersOf(id){ return votes.filter(v=>v.shopId===id).map(v=>v.name); }
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+/* ---------------- 店家區塊(靜態,只渲染一次) ---------------- */
+function galleryHTML(shopIdx, group, imgs){
+  return imgs.map((im,i)=>`
+    <figure onclick="lbOpen(${shopIdx},'${group}',${i})">
+      <img src="${im.u}" alt="${esc(im.c)}" loading="lazy"
+           onerror="this.parentNode.classList.add('broken');this.parentNode.onclick=null;this.parentNode.innerHTML='📷 圖片載入失敗';">
+      <figcaption>${esc(im.c)} 🔍</figcaption>
+    </figure>`).join("");
+}
+function renderShops(){
+  $("shops").innerHTML = SHOPS.map((s,idx)=>{
+    const mapUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(s.name+" "+s.addr);
+    return `<section class="shop" id="shop-${s.id}">
+      <div class="shop-head">
+        <span class="shop-no">0${idx+1}</span>
+        <h2>${s.name}</h2>
+        <span class="shop-tag">${s.tag}</span>
+      </div>
+      <p class="shop-intro">${s.intro}</p>
+      <div class="shop-meta rating-line">
+        <span class="grating"><span class="star">★</span> <b>${s.gmap.score}</b> <a href="${mapUrl}" target="_blank" rel="noopener">(${s.gmap.count} 則 Google 評論)</a> · 均消 ${s.gmap.price}</span>
+      </div>
+      <div class="shop-meta">
+        <span>📍 <a href="${mapUrl}" target="_blank" rel="noopener">${s.addr}</a></span>
+        <span>📞 ${s.tel}</span>
+        <span>🕐 ${s.hours}</span>
+      </div>
+      <div class="gal-label">店家環境 ENVIRONMENT</div>
+      <div class="gal env">${galleryHTML(idx,"env",s.env)}</div>
+      <div class="gal-label">菜單 MENU <span style="letter-spacing:0;color:var(--muted);font-weight:400">(點圖可放大)</span></div>
+      <div class="gal menu">${galleryHTML(idx,"menuImgs",s.menuImgs)}</div>
+      <div class="credit">照片來源:<a href="${s.creditUrl}" target="_blank" rel="noopener">${s.creditName}</a> 食記</div>
+      <div class="shop-foot">
+        <div class="dish-chips"><b>招牌必點</b>${s.menu.map(m=>`<span>${m}</span>`).join("")}</div>
+        <button class="vote-btn" data-shop="${s.id}">投這家一票</button>
+        <div class="voters-inline" id="voters-${s.id}"></div>
+      </div>
+    </section>`;
+  }).join("");
+  document.querySelectorAll(".vote-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>handleVote(btn.dataset.shop, btn));
+  });
+}
+
+/* ---------------- 動態部分(票數相關) ---------------- */
+function renderVoteState(){
+  const myName = $("voterName").value.trim();
+  const total = votes.length;
+  $("topCount").textContent = total;
+
+  SHOPS.forEach(s=>{
+    const names = votersOf(s.id);
+    const mine = myName && names.includes(myName);
+    const el = $("voters-"+s.id);
+    el.innerHTML = names.length
+      ? "已投:"+names.map(n=>`<span class="chip">${esc(n)}</span>`).join("")
+      : "還沒有人投這家,當第一個吧!";
+    const btn = document.querySelector(`.vote-btn[data-shop="${s.id}"]`);
+    btn.classList.toggle("voted", !!mine);
+    btn.textContent = mine ? "✅ 你投了這家" : "投這家一票";
+    btn.disabled = false;
+  });
+
+  // 結果長條圖
+  const counts = SHOPS.map(s => ({s, n: votersOf(s.id).length}));
+  const max = Math.max(1, ...counts.map(c=>c.n));
+  $("bars").innerHTML = counts.map(({s,n})=>{
+    const pct = total ? Math.round(n/total*100) : 0;
+    const w = n ? Math.max(9, n/max*100) : 0;
+    const lead = n===max && n>0;
+    return `<div class="bar-row ${lead?'lead':''}">
+      <div class="name">${s.name.split(" ")[0]}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%">${n?pct+"%":""}</div></div>
+      <div class="cnt">${n} 票</div>
+    </div>`;
+  }).join("");
+  $("totalLine").textContent = total
+    ? `共 ${total} 人投票 · 目前領先:${counts.filter(c=>c.n===max).map(c=>c.s.name).join("、")}`
+    : "尚無人投票,快來搶頭香!";
+
+  // 名單
+  $("rosterBody").innerHTML = total ? SHOPS.map(s=>{
+    const names = votersOf(s.id);
+    if(!names.length) return "";
+    return `<div class="roster-group">
+      <div class="gname">${s.name}(${names.length} 票)</div>
+      ${names.map(n=>`<span class="chip">${esc(n)}</span>`).join("")}
+    </div>`;
+  }).join("") : '<div class="empty">還沒有人投票。</div>';
+}
+
+/* ---------------- 投票 ---------------- */
+async function handleVote(shopId, btn){
+  const name = $("voterName").value.trim();
+  if(!name){ toast("請先在上方輸入你的姓名 👆"); $("voterName").focus(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+  const shop = shopById(shopId);
+  const prev = votes.find(v=>v.name===name);
+  if(prev && prev.shopId===shopId){ toast("你已經投給「"+shop.name+"」囉"); return; }
+
+  btn.disabled = true; btn.textContent = "送出中…";
+  try{
+    const r = await submitVote(name, shopId);
+    if(r && r.ok===false) throw new Error(r.error||"server error");
+    await loadVotes().catch(()=>{});
+    renderVoteState();
+    toast(prev ? `已改票:${name} → ${shop.name} ✅` : `${name} 投給「${shop.name}」成功!🎉`);
+  }catch(e){
+    toast("投票失敗,請稍後再試 🙏");
+    renderVoteState();
+  }
+}
+
+/* ---------------- Lightbox ---------------- */
+let lbList = [], lbIdx = 0;
+function lbOpen(shopIdx, group, i){
+  lbList = SHOPS[shopIdx][group];
+  lbIdx = i;
+  lbShow();
+  $("lb").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function lbShow(){
+  const im = lbList[lbIdx];
+  $("lbImg").src = im.u.replace(/_c\.jpg$/,"_b.jpg"); // flickr 換大圖
+  $("lbCap").textContent = im.c + `(${lbIdx+1}/${lbList.length})`;
+}
+function lbStep(d){ lbIdx = (lbIdx + d + lbList.length) % lbList.length; lbShow(); }
+function lbClose(){ $("lb").classList.remove("open"); document.body.style.overflow = ""; }
+$("lb").addEventListener("click", e=>{ if(e.target.id==="lb") lbClose(); });
+document.addEventListener("keydown", e=>{
+  if(!$("lb").classList.contains("open")) return;
+  if(e.key==="Escape") lbClose();
+  if(e.key==="ArrowLeft") lbStep(-1);
+  if(e.key==="ArrowRight") lbStep(1);
+});
+
+/* ---------------- 啟動 ---------------- */
+async function init(){
+  renderShops();
+  $("statusBadge").textContent = isDemo ? "單機試用模式" : "已連線 Google Sheets";
+  if(isDemo) $("demoNote").style.display = "block";
+  try{
+    await loadVotes();
+    if(!isDemo) $("statusBadge").textContent = "✅ 已連線 · "+votes.length+" 票";
+  }catch(e){
+    $("statusBadge").textContent = "⚠️ 後端連線失敗";
+    toast("無法連線後端,請確認 API_URL 設定");
+  }
+  renderVoteState();
+  $("voterName").addEventListener("input", ()=>renderVoteState());
+  if(!isDemo) setInterval(async()=>{ try{ await loadVotes(); renderVoteState(); }catch(e){} }, 30000);
+}
+init();
+/* build 2026-07-06b */
+</script>
+</body>
+</html>
