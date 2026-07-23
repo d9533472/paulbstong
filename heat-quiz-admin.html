@@ -77,8 +77,9 @@ function App(){
   const [loading,setLoading] = useState(false);
   const [err,setErr] = useState("");
   const [fRegion,setFRegion] = useState("");
+  const [regionPicked,setRegionPicked] = useState(false);
   const [fName,setFName] = useState("");
-  const [sort,setSort] = useState({k:"timestamp",dir:-1});
+  const [sort,setSort] = useState({k:"rank",dir:1});
 
   const load = (k)=>{
     setLoading(true); setErr("");
@@ -99,8 +100,12 @@ function App(){
     let r = rows;
     if(fRegion) r = r.filter(x=>x.region===fRegion);
     if(fName.trim()) r = r.filter(x=>(x.name||"").includes(fName.trim())||(x.company||"").includes(fName.trim()));
+    // 名次:分數高者在前,同分者作答時間短者在前
+    const ranked=[...r].sort((a,b)=>
+      (+b.score||0)-(+a.score||0) || (+a.durationSec||1e9)-(+b.durationSec||1e9));
+    const withRank = ranked.map((x,i)=>({...x, rank:i+1}));
     const dir=sort.dir;
-    return [...r].sort((a,b)=>{
+    return [...withRank].sort((a,b)=>{
       const va=a[sort.k], vb=b[sort.k];
       if(va==null) return 1; if(vb==null) return -1;
       return (va>vb?1:va<vb?-1:0)*dir;
@@ -116,9 +121,9 @@ function App(){
   },[filtered]);
 
   const exportCSV = ()=>{
-    const head=["時間","語言","工區","公司","姓名","分數","作答時間(秒)","作答時間"];
+    const head=["名次","時間","語言","工區","公司","姓名","分數","作答時間(秒)","作答時間"];
     const lines=[head.join(",")].concat(filtered.map(r=>[
-      r.timestamp,LANG_LABEL[r.language]||r.language,r.region,
+      r.rank,r.timestamp,LANG_LABEL[r.language]||r.language,r.region,
       '"'+(r.company||"").replace(/"/g,'""')+'"','"'+(r.name||"").replace(/"/g,'""')+'"',
       r.score,r.durationSec,fmtDur(+r.durationSec||0)
     ].join(",")));
@@ -147,10 +152,23 @@ function App(){
     </div>
   );
 
+  if(!regionPicked) return (
+    <div className="gate">
+      <h1>選擇工區</h1>
+      <div className="sub">先選擇要查看的工區,進入後仍可切換</div>
+      {REGIONS.map(r=>(
+        <button key={r} className="btn sec" style={{width:"100%",marginBottom:"8px",textAlign:"left",padding:"14px"}}
+          onClick={()=>{setFRegion(r);setRegionPicked(true);}}>{r}</button>
+      ))}
+      <button className="btn" style={{width:"100%",padding:"14px"}}
+        onClick={()=>{setFRegion("");setRegionPicked(true);}}>全部工區</button>
+    </div>
+  );
+
   return (
     <div className="wrap">
       <h1>七月熱危害Campaign — 作答總表</h1>
-      <div className="sub">NMDC ENERGY HSE · 一題 5 分 · 滿分 100</div>
+      <div className="sub">NMDC ENERGY HSE · 一題 5 分 · 滿分 100 · 名次:分數高者在前,同分以作答時間快者優先</div>
       <div className="stats">
         <div className="stat"><div className="v">{stats.n}</div><div className="k">作答人次</div></div>
         <div className="stat"><div className="v">{stats.avg}</div><div className="k">平均分數</div></div>
@@ -169,6 +187,7 @@ function App(){
       <div className="tblwrap">
         <table>
           <thead><tr>
+            {th("名次","rank")}
             {th("時間","timestamp")}
             {th("工區","region")}
             <th>公司</th>
@@ -179,9 +198,12 @@ function App(){
             <th>答題明細</th>
           </tr></thead>
           <tbody>
-            {filtered.length===0 && <tr><td colSpan="8"><div className="empty">尚無作答資料</div></td></tr>}
+            {filtered.length===0 && <tr><td colSpan="9"><div className="empty">尚無作答資料</div></td></tr>}
             {filtered.map((r,i)=>(
               <tr key={i}>
+                <td style={{fontWeight:900}}>
+                  {r.rank<=3 ? ["🥇","🥈","🥉"][r.rank-1] : r.rank}
+                </td>
                 <td>{fmtTs(r.timestamp)}</td>
                 <td><span className="pill">{r.region}</span></td>
                 <td>{r.company}</td>
