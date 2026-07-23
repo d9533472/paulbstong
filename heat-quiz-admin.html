@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>熱危害有獎徵答 — 後台總表</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FAF8F4;--ink:#201D17;--amber:#F0A400;--alert:#D5451B;--ok:#0E7C66;--line:#E3DED4;--muted:#7A7468;}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Noto Sans TC',-apple-system,sans-serif;}
+  .stripe{height:8px;background:repeating-linear-gradient(-45deg,var(--amber),var(--amber) 14px,var(--ink) 14px,var(--ink) 28px);}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 16px 60px;}
+  h1{font-size:20px;font-weight:900;margin:10px 0 2px;}
+  .sub{font-size:12px;color:var(--muted);margin-bottom:16px;}
+  .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center;}
+  select,input.txt{padding:9px 12px;font-size:14px;border:1.5px solid var(--line);border-radius:9px;
+    font-family:inherit;background:#fff;color:var(--ink);}
+  button.btn{padding:9px 14px;font-size:14px;font-weight:700;border:none;border-radius:9px;
+    background:var(--ink);color:#fff;cursor:pointer;font-family:inherit;}
+  button.btn.sec{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+  .stat{flex:1;min-width:120px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+  .stat .v{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;}
+  .stat .k{font-size:11px;color:var(--muted);font-weight:700;}
+  .tblwrap{background:#fff;border:1px solid var(--line);border-radius:12px;overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:760px;}
+  th{background:#F2EFE8;text-align:left;padding:10px 12px;font-size:12px;letter-spacing:.05em;
+    border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;user-select:none;}
+  th .arrow{color:var(--alert);}
+  td{padding:9px 12px;border-bottom:1px solid #F0EDE6;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  tr:last-child td{border-bottom:none;}
+  .score-hi{color:var(--ok);font-weight:900;} .score-lo{color:var(--alert);font-weight:900;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#F2EFE8;}
+  .gate{max-width:360px;margin:80px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;}
+  .gate input{width:100%;margin:12px 0;}
+  .empty{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+  .err{color:var(--alert);font-size:13px;font-weight:700;}
+  details.det summary{cursor:pointer;font-size:12px;color:var(--muted);}
+  .detbody{font-size:12px;color:var(--muted);white-space:normal;max-width:420px;line-height:1.6;padding-top:6px;}
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useMemo} = React;
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyJnwNwsHpIGax4P2nE8ajanYLKCVUOkw5b4GAvwXEMv5JaQ6Gwi1cyJr5TcguSPLqAUA/exec";
+const REGIONS = ["台中工區","通霄工區","台北辦公室","台中辦公室"];
+const LANG_LABEL = {zh:"中文",en:"EN",th:"ไทย"};
+
+function postGAS(payload,cb){
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST",GAS_URL,true);
+  xhr.setRequestHeader("Content-Type","text/plain;charset=utf-8");
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState===4){
+      if(xhr.status>=200&&xhr.status<300){
+        try{cb(true,JSON.parse(xhr.responseText));}catch(e){cb(false,null);}
+      }else cb(false,null);
+    }
+  };
+  xhr.onerror = ()=>cb(false,null);
+  xhr.send(JSON.stringify(payload));
+}
+const fmtDur = s => String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+const fmtTs = iso => { const d=new Date(iso); return isNaN(d)?iso:
+  `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
+
+function App(){
+  const [key,setKey] = useState(localStorage.getItem("hq_admin_key")||"");
+  const [authed,setAuthed] = useState(false);
+  const [rows,setRows] = useState([]);
+  const [loading,setLoading] = useState(false);
+  const [err,setErr] = useState("");
+  const [fRegion,setFRegion] = useState("");
+  const [fName,setFName] = useState("");
+  const [sort,setSort] = useState({k:"timestamp",dir:-1});
+
+  const load = (k)=>{
+    setLoading(true); setErr("");
+    postGAS({action:"list",key:k},(ok,res)=>{
+      setLoading(false);
+      if(ok && res && res.status==="ok"){
+        setRows(res.rows||[]);
+        setAuthed(true);
+        localStorage.setItem("hq_admin_key",k);
+      }else{
+        setErr(res&&res.status==="unauthorized"?"密碼錯誤":"讀取失敗,請確認 GAS URL 與部署設定");
+      }
+    });
+  };
+  useEffect(()=>{ if(key) load(key); },[]);
+
+  const filtered = useMemo(()=>{
+    let r = rows;
+    if(fRegion) r = r.filter(x=>x.region===fRegion);
+    if(fName.trim()) r = r.filter(x=>(x.name||"").includes(fName.trim())||(x.company||"").includes(fName.trim()));
+    const dir=sort.dir;
+    return [...r].sort((a,b)=>{
+      const va=a[sort.k], vb=b[sort.k];
+      if(va==null) return 1; if(vb==null) return -1;
+      return (va>vb?1:va<vb?-1:0)*dir;
+    });
+  },[rows,fRegion,fName,sort]);
+
+  const stats = useMemo(()=>{
+    const n=filtered.length;
+    const avg=n?Math.round(filtered.reduce((s,x)=>s+(+x.score||0),0)/n):0;
+    const full=filtered.filter(x=>+x.score===100).length;
+    const avgT=n?Math.round(filtered.reduce((s,x)=>s+(+x.durationSec||0),0)/n):0;
+    return {n,avg,full,avgT};
+  },[filtered]);
+
+  const exportCSV = ()=>{
+    const head=["時間","語言","工區","公司","姓名","分數","作答時間(秒)","作答時間"];
+    const lines=[head.join(",")].concat(filtered.map(r=>[
+      r.timestamp,LANG_LABEL[r.language]||r.language,r.region,
+      '"'+(r.company||"").replace(/"/g,'""')+'"','"'+(r.name||"").replace(/"/g,'""')+'"',
+      r.score,r.durationSec,fmtDur(+r.durationSec||0)
+    ].join(",")));
+    const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="heat_quiz_results.csv";
+    a.click();
+  };
+
+  const th=(label,k)=>(
+    <th onClick={()=>setSort(s=>({k,dir:s.k===k?-s.dir:-1}))}>
+      {label} {sort.k===k && <span className="arrow">{sort.dir===1?"▲":"▼"}</span>}
+    </th>
+  );
+
+  if(!authed) return (
+    <div className="gate">
+      <h1>後台總表</h1>
+      <div className="sub">NMDC ENERGY HSE 七月熱危害Campaign</div>
+      <input className="txt" type="password" placeholder="輸入管理密碼" value={key}
+        onChange={e=>setKey(e.target.value)} onKeyDown={e=>e.key==="Enter"&&load(key)}/>
+      <button className="btn" style={{width:"100%"}} onClick={()=>load(key)} disabled={loading}>
+        {loading?"驗證中…":"進入"}</button>
+      {err && <div className="err" style={{marginTop:"10px"}}>{err}</div>}
+    </div>
+  );
+
+  return (
+    <div className="wrap">
+      <h1>七月熱危害Campaign — 作答總表</h1>
+      <div className="sub">NMDC ENERGY HSE · 一題 5 分 · 滿分 100</div>
+      <div className="stats">
+        <div className="stat"><div className="v">{stats.n}</div><div className="k">作答人次</div></div>
+        <div className="stat"><div className="v">{stats.avg}</div><div className="k">平均分數</div></div>
+        <div className="stat"><div className="v">{stats.full}</div><div className="k">滿分人次</div></div>
+        <div className="stat"><div className="v">{fmtDur(stats.avgT)}</div><div className="k">平均作答時間</div></div>
+      </div>
+      <div className="bar">
+        <select value={fRegion} onChange={e=>setFRegion(e.target.value)}>
+          <option value="">全部工區</option>
+          {REGIONS.map(r=><option key={r} value={r}>{r}</option>)}
+        </select>
+        <input className="txt" placeholder="搜尋姓名 / 公司" value={fName} onChange={e=>setFName(e.target.value)}/>
+        <button className="btn sec" onClick={()=>load(key)} disabled={loading}>{loading?"載入中…":"重新整理"}</button>
+        <button className="btn" onClick={exportCSV}>匯出 CSV</button>
+      </div>
+      <div className="tblwrap">
+        <table>
+          <thead><tr>
+            {th("時間","timestamp")}
+            {th("工區","region")}
+            <th>公司</th>
+            {th("姓名","name")}
+            <th>語言</th>
+            {th("分數","score")}
+            {th("作答時間","durationSec")}
+            <th>答題明細</th>
+          </tr></thead>
+          <tbody>
+            {filtered.length===0 && <tr><td colSpan="8"><div className="empty">尚無作答資料</div></td></tr>}
+            {filtered.map((r,i)=>(
+              <tr key={i}>
+                <td>{fmtTs(r.timestamp)}</td>
+                <td><span className="pill">{r.region}</span></td>
+                <td>{r.company}</td>
+                <td style={{fontWeight:700}}>{r.name}</td>
+                <td>{LANG_LABEL[r.language]||r.language}</td>
+                <td className={+r.score>=80?"score-hi":+r.score<60?"score-lo":""} style={{fontWeight:900}}>{r.score}</td>
+                <td>{fmtDur(+r.durationSec||0)}</td>
+                <td>
+                  <details className="det"><summary>展開</summary>
+                    <div className="detbody">
+                      {(()=>{try{
+                        const d=typeof r.detail==="string"?JSON.parse(r.detail):r.detail;
+                        return (d||[]).map(x=>(x.ok?"✓":"✗")+"Q"+x.id).join("　");
+                      }catch(e){return "-";}})()}
+                    </div>
+                  </details>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
